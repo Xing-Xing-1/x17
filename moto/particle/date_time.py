@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from x17.moto.particle.duration import duration # type: ignore
-from x17.moto.particle.constant import ( # type: ignore
+from moto.particle.duration import duration # type: ignore
+from moto.particle.constant import ( # type: ignore
 	TIMEZONE_TABLE,
 )
 from datetime import ( # type: ignore

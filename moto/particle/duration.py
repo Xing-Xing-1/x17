@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from x17.moto.particle.constant import ( # type: ignore
+from moto.particle.constant import ( # type: ignore
 	TIME_UNIT_TABLE,
 )
 
