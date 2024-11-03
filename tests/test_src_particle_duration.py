@@ -180,4 +180,13 @@ def test_instance_minus():
 	assert res.get_duration() == -23 / 24
 	assert res.get_unit() == "day"
 
+def test_instance_multiply():
+	duration_obj = duration(1)
+	res = duration_obj * 2
+	assert res.get_duration() == 2
+	assert res.get_unit() == "second"
+	duration_obj = duration(1, "minute")
+	res = duration_obj * 2
+	assert res.get_duration() == 2
+	assert res.get_unit() == "minute"
 
