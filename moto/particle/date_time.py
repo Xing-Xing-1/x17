@@ -151,15 +151,73 @@ class date_time():
 	def get_date_time(self):
 		return self.date_time
 	
-	def diff(self, date_time_obj, abs = False, unit = "second"):
-		if not isinstance(date_time_obj, date_time):
-			raise ValueError("date_time object type expected, got {}".format(type(date_time_obj)))
-		
-		if unit not in duration.TIME_UNIT_TABLE:
-			raise ValueError("invalid duration unit = {}".format(duration.TIME_UNIT_TABLE.keys()))
+	'''
+		Operations
 
-		diff = self.date_time - date_time_obj.get_date_time()
-		diff = abs(diff.total_seconds()) if abs else diff.total_seconds()
+	'''
 
+	def subtract_date_time(self, date_time_obj):
+		if not isinstance(date_time_obj, date_time): 
+			raise Exception("date_time_obj must be an instance of date_time class")
+		return duration(
+			round(
+				(self.date_time - date_time_obj.get_date_time()).total_seconds()
+			),
+			"second",
+		)
+
+	def diff(self, date_time_obj, absolute = False):
+		if not isinstance(date_time_obj, date_time): 
+			raise Exception("date_time_obj must be an instance of date_time class")
+		if absolute:
+			return abs(self.subtract_date_time(date_time_obj))
+		else:
+			return self.subtract_date_time(date_time_obj)
 		
-		
+
+	def __sub__(self, duration_obj):
+		return date_time(
+			self.date_time - timedelta(seconds=duration_obj.to_second()),
+			self.date_format,
+			self.time_format,
+			self.date_time_format,
+			self.time_zone,
+		)
+	
+	def add_duration(self, duration_obj):
+		if not isinstance(duration_obj, duration): 
+			raise Exception("duration_obj must be an instance of duration class")
+		return date_time(
+			self.date_time + timedelta(seconds=duration_obj.to_second()),
+			self.date_format,
+			self.time_format,
+			self.date_time_format,
+			self.time_zone,
+		)
+
+	def __add__(self, duration_obj):
+		return self.add_duration(duration_obj)
+	
+	def __ne__(self, value: object):
+		return not self.__eq__(value)
+	
+	def __eq__(self, value: object):
+		if not isinstance(value, date_time): return False
+		return self.get_date_time() == value.get_date_time()
+	
+	def __lt__(self, value: object):
+		if not isinstance(value, date_time): return False
+		return self.get_date_time() < value.get_date_time()
+	
+	def __le__(self, value: object):
+		if not isinstance(value, date_time): return False
+		return self.get_date_time() <= value.get_date_time()
+	
+	def __gt__(self, value: object):
+		if not isinstance(value, date_time): return False
+		return self.get_date_time() > value.get_date_time()
+	
+	def __ge__(self, value: object):
+		if not isinstance(value, date_time): return False
+		return self.get_date_time() >= value.get_date_time()
+	

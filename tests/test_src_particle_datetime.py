@@ -1,4 +1,5 @@
 from moto.particle.date_time import date_time # type: ignore
+from moto.particle.duration import duration # type: ignore
 from moto.particle.constant import TIMEZONE_TABLE # type: ignore 
 from datetime import datetime
 import pytz  # type: ignore
@@ -112,5 +113,39 @@ def get_date_time():
 	date_time_str = "2021-01-01 00:00:00"
 	date_time_obj = date_time.from_str(date_time_str = date_time_str)
 	assert date_time_obj.get_date_time() == datetime.strptime("2021-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+
+'''
+	Operations:
+
+'''
+
+def test_instance_add():
+	duration_obj = duration(60, "minute")
+	date_time_str = "2021-01-01 00:00:00"
+	date_time_obj = date_time.from_str(date_time_str = date_time_str)
+	res = date_time_obj + duration_obj
+	assert res.get_date_time_str() == "2021-01-01 01:00:00"
+
+def test_instance_sub():
+	duration_obj = duration(60, "minute")
+	date_time_str = "2021-01-01 00:00:00"
+	date_time_obj = date_time.from_str(date_time_str = date_time_str)
+	res = date_time_obj - duration_obj
+	assert res.get_date_time_str() == "2020-12-31 23:00:00"
+
+def test_instance_diff():
+	date_time_str1 = "2021-01-01 00:00:00"
+	date_time_obj1 = date_time.from_str(date_time_str = date_time_str1)
+	date_time_str2 = "2021-01-01 01:00:00"
+	date_time_obj2 = date_time.from_str(date_time_str = date_time_str2)
+	res = date_time_obj1.diff(date_time_obj2)
+	assert isinstance(res, duration)
+	assert res.get_duration() == -3600
+	assert res.unit == "second"
+	res = date_time_obj2.diff(date_time_obj1, absolute=True)
+	assert isinstance(res, duration)
+	assert res.get_duration() == 3600
+	assert res.unit == "second"
+
 
 

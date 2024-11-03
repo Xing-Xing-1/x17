@@ -19,16 +19,6 @@ install-env:
 	@echo "Installing packages in environment '$(ENV_NAME)'..."
 	conda install --name $(ENV_NAME) --file requirements.txt -y
 
-# Initialize Conda and activate the environment
-start-env:
-	@echo "Activating environment '$(ENV_NAME)'..."
-	conda -v activate svc-x17-moto 
-
-# Deactivate the environment
-stop-env:
-	@echo "Deactivating environment..."
-	conda deactivate
-
 # Remove the environment
 remove-env:
 	@echo "Removing environment '$(ENV_NAME)'..."
