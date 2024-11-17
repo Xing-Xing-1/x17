@@ -1,3 +1,5 @@
 pip
 pytz
 pytest
+nltk
+numpy

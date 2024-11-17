@@ -1,8 +1,6 @@
 from moto.particle.constant import (
 	HASH_ALGORITHMS,
 )
-from typing import Literal
-import hashlib
 
 class text():
 	def __init__(self, text = ''):
@@ -20,7 +18,7 @@ class text():
 	def __ne__(self, other):
 		return self.content != other.content
 	
-	def __plus__(self, other):
+	def __add__(self, other):
 		return text(self.content + other.content)
 	
 	def __len__(self):
@@ -29,6 +27,17 @@ class text():
 	def encode(self):
 		return self.content.encode()
 	
+	def as_upper(self):
+		self.content = self.content.upper()
+	
+	def as_lower(self):
+		self.content = self.content.lower
+
+	def to_upper(self):
+		return text(self.content.upper())
+	
+	def to_lower(self):
+		return text(self.content.lower())
 
 
 	'''
@@ -59,10 +68,3 @@ class text():
 		self.as_digest(algorithm)
 		return text(self.content)
 	
-
-
-	'''
-	
-
-	'''
-

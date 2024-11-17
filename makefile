@@ -32,3 +32,7 @@ update-env:
 # Additional helper targets for convenience
 .PHONY: env not-env create-env install-env start-env stop-env remove-env
 
+# Only test the particle module
+test-particle:
+	pytest -v tests/particle
+
