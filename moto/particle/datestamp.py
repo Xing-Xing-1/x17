@@ -12,12 +12,12 @@ from datetime import ( # type: ignore
 import pytz # type: ignore
 
 
-class date_time():
+class datestamp():
 	DEFAULT_TIME_ZONE = "Australia/Sydney"
 	TIME_ZONE = pytz.timezone(DEFAULT_TIME_ZONE)
 	DATE_FORMAT = "%Y-%m-%d"
 	TIME_FORMAT = "%H:%M:%S"
-	DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+	datestamp_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 	@classmethod
 	def show_time_zones(cls):
@@ -36,30 +36,30 @@ class date_time():
 		cls.DATE_FORMAT = date_format
 
 	@classmethod
-	def set_date_time_format(cls, date_time_format):
-		cls.DATE_TIME_FORMAT = date_time_format
+	def set_datestamp_format(cls, datestamp_format):
+		cls.datestamp_FORMAT = datestamp_format
 	
 	@classmethod
 	def from_str(
 			cls,
-			date_time_str,
+			datestamp_str,
 			date_format = None, 
 			time_format = None,
-			date_time_format = None,
+			datestamp_format = None,
 			time_zone = None,
 		):
-		date_time_object = cls()
-		date_time_object.set(
+		datestamp_object = cls()
+		datestamp_object.set(
 			datetime_obj = datetime.strptime(
-				date_time_str, 
-				date_time_format or cls.DATE_TIME_FORMAT,
+				datestamp_str, 
+				datestamp_format or cls.datestamp_FORMAT,
 			),
 			date_format = date_format,
 			time_format = time_format,
-			date_time_format = date_time_format,
+			datestamp_format = datestamp_format,
 			time_zone = time_zone,
 		)
-		return date_time_object
+		return datestamp_object
 
 	@classmethod
 	def from_timestamp(
@@ -67,21 +67,21 @@ class date_time():
 			timestamp,
 			date_format = None, 
 			time_format = None,
-			date_time_format = None,
+			datestamp_format = None,
 			time_zone = None,
 		):
-		date_time_object = cls()
-		date_time_object.set(
+		datestamp_object = cls()
+		datestamp_object.set(
 			datetime_obj = datetime.fromtimestamp(
 				timestamp,
 				time_zone or cls.TIME_ZONE
 			),
 			date_format = date_format,
 			time_format = time_format,
-			date_time_format = date_time_format,
+			datestamp_format = datestamp_format,
 			time_zone = time_zone,
 		)
-		return date_time_object
+		return datestamp_object
 
 	# Init method 
 	def __init__(
@@ -89,41 +89,41 @@ class date_time():
 			datetime_obj = None,
 			date_format = None, 
 			time_format = None,
-			date_time_format = None,
+			datestamp_format = None,
 			time_zone = None,
 		):
 			self.time_zone = time_zone if time_zone else self.TIME_ZONE
 			self.date_format = date_format or self.DATE_FORMAT
 			self.time_format = time_format or self.TIME_FORMAT
-			self.date_time_format = date_time_format or self.DATE_TIME_FORMAT
+			self.datestamp_format = datestamp_format or self.datestamp_FORMAT
 
-			self.date_time = datetime_obj or datetime.now()
-			self.date_time = self.date_time.replace(tzinfo=self.time_zone)
-			self.date = self.date_time.date()
-			self.time = self.date_time.time()
+			self.datestamp = datetime_obj or datetime.now()
+			self.datestamp = self.datestamp.replace(tzinfo=self.time_zone)
+			self.date = self.datestamp.date()
+			self.time = self.datestamp.time()
     
 	def set(
 			self,
 			datetime_obj = None,
 			date_format = None, 
 			time_format = None,
-			date_time_format = None,
+			datestamp_format = None,
 			time_zone = None,
 		):
 		self.__init__(
 			datetime_obj = datetime_obj,
 			date_format = date_format,
 			time_format = time_format,
-			date_time_format = date_time_format,
+			datestamp_format = datestamp_format,
 			time_zone = time_zone,
 		)
 	
 	def __str__(self):
-		return self.get_date_time_str()
+		return self.get_datestamp_str()
 	
 	def __dict__(self):
 		return {
-			"date_time": self.get_date_time_str(),
+			"datestamp": self.get_datestamp_str(),
 			"time_zone": self.get_time_zone(),
 		}
 	
@@ -133,11 +133,11 @@ class date_time():
 	def get_time_str(self):
 		return self.time.strftime(self.time_format)
 	
-	def get_date_time_str(self):
-		return self.date_time.strftime(self.date_time_format)
+	def get_datestamp_str(self):
+		return self.datestamp.strftime(self.datestamp_format)
 	
 	def get_timestamp(self):
-		return int(self.date_time.timestamp())
+		return int(self.datestamp.timestamp())
 	
 	def get_time_zone(self):
 		return self.time_zone
@@ -148,50 +148,50 @@ class date_time():
 	def get_time(self):
 		return self.time
 	
-	def get_date_time(self):
-		return self.date_time
+	def get_datestamp(self):
+		return self.datestamp
 	
 	'''
 		Operations
 
 	'''
 
-	def subtract_date_time(self, date_time_obj):
-		if not isinstance(date_time_obj, date_time): 
-			raise Exception("date_time_obj must be an instance of date_time class")
+	def subtract_datestamp(self, datestamp_obj):
+		if not isinstance(datestamp_obj, datestamp): 
+			raise Exception("datestamp_obj must be an instance of datestamp class")
 		return duration(
 			round(
-				(self.date_time - date_time_obj.get_date_time()).total_seconds()
+				(self.datestamp - datestamp_obj.get_datestamp()).total_seconds()
 			),
 			"second",
 		)
 
-	def diff(self, date_time_obj, absolute = False):
-		if not isinstance(date_time_obj, date_time): 
-			raise Exception("date_time_obj must be an instance of date_time class")
+	def diff(self, datestamp_obj, absolute = False):
+		if not isinstance(datestamp_obj, datestamp): 
+			raise Exception("datestamp_obj must be an instance of datestamp class")
 		if absolute:
-			return abs(self.subtract_date_time(date_time_obj))
+			return abs(self.subtract_datestamp(datestamp_obj))
 		else:
-			return self.subtract_date_time(date_time_obj)
+			return self.subtract_datestamp(datestamp_obj)
 		
 
 	def __sub__(self, duration_obj):
-		return date_time(
-			self.date_time - timedelta(seconds=duration_obj.to_second()),
+		return datestamp(
+			self.datestamp - timedelta(seconds=duration_obj.to_second()),
 			self.date_format,
 			self.time_format,
-			self.date_time_format,
+			self.datestamp_format,
 			self.time_zone,
 		)
 	
 	def add_duration(self, duration_obj):
 		if not isinstance(duration_obj, duration): 
 			raise Exception("duration_obj must be an instance of duration class")
-		return date_time(
-			self.date_time + timedelta(seconds=duration_obj.to_second()),
+		return datestamp(
+			self.datestamp + timedelta(seconds=duration_obj.to_second()),
 			self.date_format,
 			self.time_format,
-			self.date_time_format,
+			self.datestamp_format,
 			self.time_zone,
 		)
 
@@ -202,22 +202,22 @@ class date_time():
 		return not self.__eq__(value)
 	
 	def __eq__(self, value: object):
-		if not isinstance(value, date_time): return False
-		return self.get_date_time() == value.get_date_time()
+		if not isinstance(value, datestamp): return False
+		return self.get_datestamp() == value.get_datestamp()
 	
 	def __lt__(self, value: object):
-		if not isinstance(value, date_time): return False
-		return self.get_date_time() < value.get_date_time()
+		if not isinstance(value, datestamp): return False
+		return self.get_datestamp() < value.get_datestamp()
 	
 	def __le__(self, value: object):
-		if not isinstance(value, date_time): return False
-		return self.get_date_time() <= value.get_date_time()
+		if not isinstance(value, datestamp): return False
+		return self.get_datestamp() <= value.get_datestamp()
 	
 	def __gt__(self, value: object):
-		if not isinstance(value, date_time): return False
-		return self.get_date_time() > value.get_date_time()
+		if not isinstance(value, datestamp): return False
+		return self.get_datestamp() > value.get_datestamp()
 	
 	def __ge__(self, value: object):
-		if not isinstance(value, date_time): return False
-		return self.get_date_time() >= value.get_date_time()
+		if not isinstance(value, datestamp): return False
+		return self.get_datestamp() >= value.get_datestamp()
 	

@@ -24,5 +24,11 @@ remove-env:
 	@echo "Removing environment '$(ENV_NAME)'..."
 	conda env remove --name $(ENV_NAME) -y || echo "Environment not found."
 
+# update the environment
+update-env:
+	@echo "Updating packages in environment '$(ENV_NAME)'..."
+	conda update --name $(ENV_NAME) --file requirements.txt -y
+
 # Additional helper targets for convenience
 .PHONY: env not-env create-env install-env start-env stop-env remove-env
+
