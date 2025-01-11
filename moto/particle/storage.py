@@ -55,7 +55,6 @@ class storage:
 			self.unit,
 		).as_readable()
 		
-	
 	def as_readable(self):
 		size, unit = self.get_readable_size()
 		self.size = size
