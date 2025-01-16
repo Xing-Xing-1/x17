@@ -11,7 +11,7 @@ def test_class():
     assert datestamp.TIME_ZONE == pytz.timezone("Australia/Sydney")
     assert datestamp.DATE_FORMAT == "%Y-%m-%d"
     assert datestamp.TIME_FORMAT == "%H:%M:%S"
-    assert datestamp.datestamp_FORMAT == "%Y-%m-%d %H:%M:%S"
+    assert datestamp.DATESTAMP_FORMAT == "%Y-%m-%d %H:%M:%S"
 
 
 def test_class_show_time_zones():
@@ -37,7 +37,7 @@ def test_class_set_date_format():
 
 def test_class_set_datestamp_format():
     datestamp.set_datestamp_format("%d-%m-%Y %H:%M")
-    assert datestamp.datestamp_FORMAT == "%d-%m-%Y %H:%M"
+    assert datestamp.DATESTAMP_FORMAT == "%d-%m-%Y %H:%M"
     datestamp.set_datestamp_format("%Y-%m-%d %H:%M:%S")
 
 
@@ -181,3 +181,119 @@ def test_instance_diff():
     assert isinstance(res, duration)
     assert res.get_duration() == 3600
     assert res.unit == "second"
+
+def test_instance_ne_true():
+    datestamp_str = "2021-01-01 00:00:00"
+    datestamp_obj = datestamp.from_str(datestamp_str=datestamp_str)
+    assert datestamp_obj != None
+
+    datestamp_now = datestamp()
+    assert datestamp_obj != datestamp_now
+
+def test_instance_ne_false():
+    datestamp_str = "2021-01-01 00:00:00"
+    datestamp_obj = datestamp.from_str(datestamp_str=datestamp_str)
+    assert datestamp_obj == datestamp_obj
+
+def test_instance_eq_true():
+    datestamp_str = "2021-01-01 00:00:00"
+    datestamp_obj = datestamp.from_str(datestamp_str=datestamp_str)
+    assert datestamp_obj == datestamp_obj
+
+    datestamp_obj_cp = datestamp.from_str(datestamp_str=datestamp_str)
+    assert datestamp_obj == datestamp_obj_cp
+
+def test_instance_eq_false():
+    datestamp_str = "2021-01-01 00:00:00"
+    datestamp_obj = datestamp.from_str(datestamp_str=datestamp_str)
+    datestamp_now = datestamp()
+    assert datestamp_obj != datestamp_now
+
+def test_instance_lt_true():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 01:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj1 < datestamp_obj2
+
+def test_instance_lt_false():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 01:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj2 > datestamp_obj1
+    assert datestamp_obj1 < datestamp_obj2
+    assert not datestamp_obj2 < datestamp_obj1
+
+def test_instance_lt_equal():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 00:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert not datestamp_obj1 < datestamp_obj2
+    assert not datestamp_obj2 < datestamp_obj1
+
+def test_instance_lt_false():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 00:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert not datestamp_obj1 < datestamp_obj2
+    assert not datestamp_obj2 < datestamp_obj1
+
+def test_instance_le_true():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 00:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj1 <= datestamp_obj2
+    assert datestamp_obj2 <= datestamp_obj1
+
+def test_instance_le_false():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 01:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj1 <= datestamp_obj2
+    assert not datestamp_obj2 <= datestamp_obj1
+
+def test_instance_gt_true():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 01:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj2 > datestamp_obj1
+
+def test_instance_gt_false():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 01:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj1 < datestamp_obj2
+    assert datestamp_obj2 > datestamp_obj1
+    assert not datestamp_obj1 > datestamp_obj2
+
+def test_instance_gt_equal():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 00:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert not datestamp_obj1 > datestamp_obj2
+    assert not datestamp_obj2 > datestamp_obj1
+
+def test_instance_ge_true():
+    datestamp_str1 = "2021-01-01 01:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 00:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj1 >= datestamp_obj2
+    assert not datestamp_obj2 >= datestamp_obj1
+
+def test_instance_ge_false():
+    datestamp_str1 = "2021-01-01 00:00:00"
+    datestamp_obj1 = datestamp.from_str(datestamp_str=datestamp_str1)
+    datestamp_str2 = "2021-01-01 01:00:00"
+    datestamp_obj2 = datestamp.from_str(datestamp_str=datestamp_str2)
+    assert datestamp_obj2 >= datestamp_obj1
+    assert not datestamp_obj1 >= datestamp_obj2
+

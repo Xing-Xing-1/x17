@@ -17,7 +17,7 @@ class datestamp():
 	TIME_ZONE = pytz.timezone(DEFAULT_TIME_ZONE)
 	DATE_FORMAT = "%Y-%m-%d"
 	TIME_FORMAT = "%H:%M:%S"
-	datestamp_FORMAT = "%Y-%m-%d %H:%M:%S"
+	DATESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 	@classmethod
 	def show_time_zones(cls):
@@ -37,8 +37,8 @@ class datestamp():
 
 	@classmethod
 	def set_datestamp_format(cls, datestamp_format):
-		cls.datestamp_FORMAT = datestamp_format
-	
+		cls.DATESTAMP_FORMAT = datestamp_format
+
 	@classmethod
 	def from_str(
 			cls,
@@ -52,7 +52,7 @@ class datestamp():
 		datestamp_object.set(
 			datetime_obj = datetime.strptime(
 				datestamp_str, 
-				datestamp_format or cls.datestamp_FORMAT,
+				datestamp_format or cls.DATESTAMP_FORMAT,
 			),
 			date_format = date_format,
 			time_format = time_format,
@@ -95,7 +95,7 @@ class datestamp():
 			self.time_zone = time_zone if time_zone else self.TIME_ZONE
 			self.date_format = date_format or self.DATE_FORMAT
 			self.time_format = time_format or self.TIME_FORMAT
-			self.datestamp_format = datestamp_format or self.datestamp_FORMAT
+			self.datestamp_format = datestamp_format or self.DATESTAMP_FORMAT
 
 			self.datestamp = datetime_obj or datetime.now()
 			self.datestamp = self.datestamp.replace(tzinfo=self.time_zone)
