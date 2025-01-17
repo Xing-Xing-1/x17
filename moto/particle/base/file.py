@@ -3,7 +3,7 @@ from pathlib import Path
 
 from moto.particle.datestamp import datestamp
 
-class File:
+class BaseFile:
     def __init__(
         self,
         path: str = "",
@@ -26,9 +26,17 @@ class File:
             self.suffix = None
             self.exists = False
 
-        current_datestamp = datestamp()
-        self.created_at = current_datestamp
-        self.updated_at = current_datestamp
+    def __str__(self):
+        return f"{self.name}"
+
+    def __dict__(self):
+        return {
+            "path": self.get_path(as_str=True),
+            "full_path": self.get_fullpath(as_str=True),
+            "name": self.get_name(),
+            "suffix": self.get_suffix(),
+            "exists": self.check_exists()
+        }
 
     def set(
         self,
@@ -38,7 +46,7 @@ class File:
             path=path,
         )
 
-    def exists(self):
+    def check_exists(self):
         return self.path.exists()
 
     def get_name(self):
@@ -66,9 +74,3 @@ class File:
 
     def get_suffix(self):
         return self.suffix
-
-    def update_datestamp(
-        self,
-        updated_at: datestamp = datestamp(),
-    ):
-        self.updated_at = updated_at

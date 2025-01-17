@@ -1,18 +1,18 @@
-from moto.particle.base.tag import Tag
+from moto.particle.base.tag import BaseTag
 
-class Tagset:
+class BaseTagset:
 	@classmethod
 	def from_dict(cls, dict):
 		return cls(
 			tags = [
-				Tag.from_dict({str(key): str(value)}) for key, value in dict.items()
+				BaseTag.from_dict({str(key): str(value)}) for key, value in dict.items()
 			]
 		)
 	
 	def from_list(cls, list):
 		return cls(
 			tags = [
-				Tag.from_dict(tag) for tag in list
+				BaseTag.from_dict(tag) for tag in list
 			]
 		)
 
@@ -55,7 +55,7 @@ class Tagset:
 	def update(self, key = None, value = None, tag = None):
 		if (key and value):
 			if key in self.book: self.remove(self.get(key))
-			self.add(Tag(key = key, value = value))
+			self.add(BaseTag(key = key, value = value))
 		else:
 			self.remove(tag)
 			self.add(tag)

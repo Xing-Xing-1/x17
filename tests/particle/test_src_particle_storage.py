@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import pytest  # type: ignore
 
 from moto.particle.storage import storage

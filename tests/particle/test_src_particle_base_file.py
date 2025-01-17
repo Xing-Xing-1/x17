@@ -1,4 +1,7 @@
-from moto.particle.base.file import File
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from moto.particle.base.file import BaseFile
 from moto.particle.datestamp import datestamp
 import pytest # type: ignore
 import os # type: ignore
@@ -7,12 +10,12 @@ cwd = os.getcwd()
 
 @pytest.fixture
 def empty_file():
-	return File()
+	return BaseFile()
 
 @pytest.fixture
 def sample_file():
 	path = "tests/env/sample.txt"
-	return File(path = path)
+	return BaseFile(path = path)
 
 def test_init_default(empty_file):
 	assert empty_file.path == None
@@ -20,7 +23,6 @@ def test_init_default(empty_file):
 	assert empty_file.name == None
 	assert empty_file.extension == None
 	assert empty_file.exists == False
-	assert empty_file.created_at == empty_file.updated_at
 
 def test_init_with_path(sample_file):
 	assert sample_file.full_path.as_posix() == f"{cwd}/tests/env/sample.txt"
@@ -28,7 +30,6 @@ def test_init_with_path(sample_file):
 	assert sample_file.name == 'sample.txt'
 	assert sample_file.suffix == '.txt'
 	assert sample_file.exists == True
-	assert sample_file.created_at == sample_file.updated_at
 
 def test_set(empty_file):
 	path = "tests/env/sample.txt"
@@ -38,7 +39,6 @@ def test_set(empty_file):
 	assert empty_file.name == 'sample.txt'
 	assert empty_file.suffix == '.txt'
 	assert empty_file.exists == True
-	assert empty_file.created_at == empty_file.updated_at
 
 def test_get_attributes(sample_file):
 	assert sample_file.get_name() == 'sample.txt'
@@ -69,24 +69,3 @@ def test_not_exists_after_set(empty_file):
 	assert empty_file.exists == False
 	empty_file.set(path = path)
 	assert empty_file.exists == True
-
-def test_update_datestamp(empty_file):
-	empty_file.update_datestamp()
-	assert empty_file.updated_at != empty_file.created_at
-	assert empty_file.updated_at != None
-	assert empty_file.created_at != None
-	assert empty_file.updated_at < empty_file.created_at
-
-def test_update_datestamp_with_datestamp(empty_file):
-	empty_file.update_datestamp(
-		updated_at = datestamp.from_str(
-			"2021-01-01", 
-			datestamp_format='%Y-%m-%d'),
-		)
-	assert empty_file.updated_at == datestamp.from_str(
-		"2021-01-01", 
-		datestamp_format='%Y-%m-%d',
-	)
-	assert empty_file.created_at != empty_file.updated_at
-	assert empty_file.created_at != None
-	assert empty_file.updated_at != None

@@ -1,4 +1,4 @@
-class Tag:
+class BaseTag:
 	@classmethod
 	def from_dict(cls, dict):
 		return cls(dict['key'], dict['value'])
