@@ -14,7 +14,12 @@ class storage:
 		return f"{self.size} {self.unit}"
 	
 	def __eq__(self, other: "storage"):
-		return self.size == other.to_unit(self.unit).size and self.unit == other.to_unit(self.unit).unit
+		if isinstance(other, storage):
+			return self.size == other.to_unit(self.unit).size and self.unit == other.to_unit(self.unit).unit
+		else:
+			return False
+
+		
 
 	def __add__(self, other: "storage"):
 		universal_self_size = self.to_unit("b").size

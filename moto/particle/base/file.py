@@ -47,7 +47,7 @@ class BaseFile:
         )
 
     def check_exists(self):
-        return self.path.exists()
+        return self.path.exists() if self.path else False
 
     def get_name(self):
         return self.name
