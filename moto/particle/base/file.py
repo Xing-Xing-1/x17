@@ -3,6 +3,7 @@ from pathlib import Path
 
 from moto.particle.datestamp import datestamp
 
+
 class BaseFile:
     def __init__(
         self,
@@ -35,7 +36,7 @@ class BaseFile:
             "full_path": self.get_fullpath(as_str=True),
             "name": self.get_name(),
             "suffix": self.get_suffix(),
-            "exists": self.check_exists()
+            "exists": self.check_exists(),
         }
 
     def set(
