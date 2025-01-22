@@ -1,4 +1,4 @@
-import pytest
+import pytest # type: ignore
 from moto.particle.custom.tag import BaseTag  # type: ignore
 from moto.particle.custom.tagset import BaseTagset  # type: ignore
 

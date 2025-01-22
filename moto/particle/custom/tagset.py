@@ -61,8 +61,7 @@ class BaseTagset:
                 Optional[BaseTag]: 解析出的标签。
         """
         if tag: return tag
-        elif key and value: return BaseTag(key, value)
-        elif key and key in self.book: return self.book[key]
+        elif key: return BaseTag(key, value)
         else: return None
 
     @property
@@ -70,10 +69,10 @@ class BaseTagset:
         return len(self.book)
 
     def __len__(self):
-        return len(self.tags)
+        return len(self.book)
 
     def __str__(self):
-        return f"BaseTagset({len(self.tags)} tags)"
+        return f"BaseTagset({len(self.book)} tags)"
 
     def __dict__(self):
         return self.book
@@ -142,6 +141,7 @@ class BaseTagset:
             key: Optional[str] = None, 
             value: Optional[str] = None, 
             tag: Optional[BaseTag] = None,
+            tagset: Optional['BaseTagset'] = None,
         ):
         """
             更新标签。如果键存在则覆盖，否则添加。
@@ -154,6 +154,9 @@ class BaseTagset:
         resolved_tag = self._resolve_tag(key, value, tag)
         if resolved_tag:
             self.book[resolved_tag.key] = resolved_tag
+        elif tagset:
+            self.merge(tagset)
+
 
     def list_tags(self):
         """
@@ -167,3 +170,10 @@ class BaseTagset:
         将标签集合导出为字典列表。
         """
         return [tag.export() for tag in self.book.values()]
+    
+    def merge(self, tagset: 'BaseTagset'):
+        """
+        合并另一个标签集合。
+        """
+        for tag in tagset.book.values():
+            self.update(tag=tag)
