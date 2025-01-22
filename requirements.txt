@@ -4,3 +4,4 @@ pytest
 nltk
 numpy
 pathlib
+fs

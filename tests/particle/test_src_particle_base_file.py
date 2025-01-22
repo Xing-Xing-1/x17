@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from moto.particle.base.file import BaseFile
-from moto.particle.datestamp import datestamp
 import pytest  # type: ignore
 import os  # type: ignore
 
@@ -24,7 +23,6 @@ def test_init_default(empty_file):
     assert empty_file.path == None
     assert empty_file.full_path == None
     assert empty_file.name == None
-    assert empty_file.extension == None
     assert empty_file.exists == False
 
 

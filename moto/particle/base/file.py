@@ -1,77 +1,39 @@
-from os.path import abspath
-from pathlib import Path
-
-from moto.particle.datestamp import datestamp
+from moto.particle.base.item import BaseItem
 
 
-class BaseFile:
+class BaseFile(BaseItem):
     def __init__(
         self,
         path: str = "",
         strict: bool = False,
     ):
-        if path:
-            self.path = Path(path)
-            try:
-                self.full_path = self.path.resolve(strict=strict)
-            except Exception:
-                self.full_path = Path(abspath(self.path))
-            self.name = self.path.name
-            self.suffix = self.path.suffix
-            self.exists = self.path.exists()
+        super().__init__(path=path, strict=strict,)
+        if self.exists and not self.is_file:
+            raise ValueError(f"The path '{self.path}' is not a file.")
+        
+        if self.path:
+            self.suffix = self.path.suffix  # Single extension
+            self.suffixes = self.path.suffixes  # All extensions
         else:
-            self.path = None
-            self.full_path = None
-            self.name = None
-            self.extension = None
             self.suffix = None
-            self.exists = False
+            self.suffixes = None
+
+
 
     def __str__(self):
-        return f"{self.name}"
-
+        return f"BaseFile(name={self.name}, path={self.get_path(as_str=True)})"
+    
     def __dict__(self):
-        return {
-            "path": self.get_path(as_str=True),
-            "full_path": self.get_fullpath(as_str=True),
-            "name": self.get_name(),
-            "suffix": self.get_suffix(),
-            "exists": self.check_exists(),
-        }
+        result = super().__dict__()
+        result.update({
+            "suffix": self.suffix,
+            "suffixes": self.suffixes,
+        })
+        return result
 
-    def set(
-        self,
-        path: str = "",
-    ):
-        self.__init__(
-            path=path,
-        )
-
-    def check_exists(self):
-        return self.path.exists() if self.path else False
-
-    def get_name(self):
-        return self.name
-
-    def get_path(
-        self,
-        as_str: bool = False,
-        as_posix: bool = True,
-    ):
-        if self.path and as_str:
-            return self.path.as_posix() if as_posix else str(self.path)
+    def get_suffix(self, lower: bool = True,):
+        if self.suffix:
+            return self.suffix.lower() if lower else self.suffix
         else:
-            return self.path
+            return None
 
-    def get_fullpath(
-        self,
-        as_str: bool = False,
-        as_posix: bool = True,
-    ):
-        if self.path and as_str:
-            return self.full_path.as_posix() if as_posix else str(self.path)
-        else:
-            return self.full_path
-
-    def get_suffix(self):
-        return self.suffix

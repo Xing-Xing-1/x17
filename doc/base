@@ -1,0 +1,12 @@
+BaseMetaManager (STATIC CLASS)
+    ├── Manages ──> BaseMeta
+BaseItem
+    ├── Contains ──> BaseMeta
+BaseFile (inherits BaseItem)
+    ├── Extends ──> BaseMeta (size, comment, last_accessed_time)
+BaseFolder (inherits BaseItem)
+    ├── Extends ──> BaseMeta (file_count, file_names, folder_size)
+BaseMeta
+    ├── Contains ──> tagset
+    ├── Contains ──> comment
+    ├── Contains ──> file_count
