@@ -1,6 +1,6 @@
-from pathlib import Path
-import shutil
 import os
+import shutil
+from pathlib import Path
 
 from moto.particle.base.item import BaseItem
 from moto.particle.datestamp import datestamp
@@ -10,10 +10,10 @@ from moto.particle.storage import storage
 class BaseFolder(BaseItem):
     def __init__(self, path: str = "", strict: bool = False):
         super().__init__(path, strict)
-        
+
         if self.exists and not self.is_dir:
             raise NotADirectoryError(f"The path '{self.path}' is not a directory.")
-        
+
         # Additional folder-specific properties
         self.is_hidden = self.name.startswith(".") if self.name else False
         self.size = self.compute_size()
@@ -27,9 +27,7 @@ class BaseFolder(BaseItem):
         """
         if not self.exists:
             return storage(0)
-        total_size = sum(
-            f.stat().st_size for f in self.path.rglob("*") if f.is_file()
-        )
+        total_size = sum(f.stat().st_size for f in self.path.rglob("*") if f.is_file())
         return storage(total_size)
 
     def list_contents(self, include_hidden=False):
@@ -38,7 +36,7 @@ class BaseFolder(BaseItem):
         """
         if not self.exists:
             return []
-        
+
         contents = [BaseItem(f) for f in self.path.iterdir()]
         if not include_hidden:
             contents = [item for item in contents if not item.is_hidden]
@@ -49,7 +47,8 @@ class BaseFolder(BaseItem):
         List all files in the folder.
         """
         return [
-            BaseItem(f) for f in self.path.iterdir() 
+            BaseItem(f)
+            for f in self.path.iterdir()
             if f.is_file() and (include_hidden or not f.name.startswith("."))
         ]
 
@@ -58,7 +57,8 @@ class BaseFolder(BaseItem):
         List all subdirectories in the folder.
         """
         return [
-            BaseFolder(f) for f in self.path.iterdir() 
+            BaseFolder(f)
+            for f in self.path.iterdir()
             if f.is_dir() and (include_hidden or not f.name.startswith("."))
         ]
 

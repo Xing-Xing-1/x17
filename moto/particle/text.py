@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from moto.particle.constant import (
-    HASH_ALGORITHMS,
-)
+from moto.particle.constant import HASH_ALGORITHMS
 
 
 class text:

@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from moto.particle.constant import (  # type: ignore
-    TIME_UNIT_TABLE,
-)
+from moto.particle.constant import TIME_UNIT_TABLE  # type: ignore
 
 
 class duration:

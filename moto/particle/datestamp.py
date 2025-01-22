@@ -1,15 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from moto.particle.duration import duration  # type: ignore
-from moto.particle.constant import (  # type: ignore
-    TIMEZONE_TABLE,
-)
-from datetime import (  # type: ignore
-    datetime,
-    timedelta,
-)
+from datetime import datetime, timedelta  # type: ignore
+
 import pytz  # type: ignore
+
+from moto.particle.constant import TIMEZONE_TABLE  # type: ignore
+from moto.particle.duration import duration  # type: ignore
 
 
 class datestamp:

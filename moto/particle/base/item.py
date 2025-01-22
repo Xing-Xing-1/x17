@@ -1,9 +1,10 @@
+import os
 from os.path import abspath
 from pathlib import Path
-import os
 
 from moto.particle.datestamp import datestamp
 from moto.particle.storage import storage
+
 
 class BaseItem:
     def __init__(
@@ -24,7 +25,7 @@ class BaseItem:
             self.full_path = None
             self.name = None
             self.exists = False
-        
+
         if self.exists:
             self.is_file = os.path.isfile(self.path)
             self.is_dir = os.path.isdir(self.path)
@@ -43,12 +44,12 @@ class BaseItem:
             self.is_dir = None
             self.is_hidden = None
             self.permission = None
-        
+
         try:
             self.id = os.stat(self.path).st_ino
         except Exception:
             self.id = None
-    
+
     """
         Properties for BaseItem
 
@@ -62,7 +63,7 @@ class BaseItem:
             )
         else:
             return None
-    
+
     @property
     def modify_at(self):
         if self.exists:
@@ -71,7 +72,7 @@ class BaseItem:
             )
         else:
             return None
-    
+
     @property
     def access_at(self):
         if self.exists:
@@ -129,38 +130,40 @@ class BaseItem:
             return self.full_path.as_posix() if as_posix else str(self.path)
         else:
             return self.full_path
-    
+
     def get_name(self):
         return self.name
 
     def get_id(self):
         return self.id
-    
+
     def get_create_at(self):
         return self.create_at
-    
+
     def get_modify_at(self):
         return self.modify_at
-    
+
     def get_access_at(self):
         return self.access_at
 
     def get_size(self):
         return self.size
-    
+
     def get_permission(self):
         return self.permission
-    
+
     """
         Utility methods for BaseItem
 
     """
-    
+
     def set(
         self,
         path: str = "",
     ):
-        self.__init__(path=path,)
+        self.__init__(
+            path=path,
+        )
 
     def check_exists(self):
         return self.path.exists() if self.path else False

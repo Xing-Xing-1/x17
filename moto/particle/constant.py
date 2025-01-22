@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 import hashlib
-import pytz  # type: ignore
+from datetime import datetime
 
+import pytz  # type: ignore
 
 """
 	Time unit constants in seconds and conversions

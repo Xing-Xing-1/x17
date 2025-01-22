@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from moto.particle.constant import (
-    STORAGE_UNIT_TABLE,
-)
+from moto.particle.constant import STORAGE_UNIT_TABLE
 
 
 class storage:

@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import shutil
+
 from moto.particle.base.file import BaseFile
 from moto.particle.datestamp import datestamp
 from moto.particle.storage import storage
-import shutil
-import os
 
 
 class File(BaseFile):
