@@ -1,0 +1,5 @@
+PROJ_NAME = pangu
+ENV_NAME = $(PROJ_NAME)
+PYTHON_VERSION = 3.11
+SHELL = /bin/zsh
+
