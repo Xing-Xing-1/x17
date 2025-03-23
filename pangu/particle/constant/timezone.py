@@ -17,6 +17,8 @@ TIMEZONE_TABLE = {
     )
     for timezone in pytz.all_timezones
 }
+DEFUALT_TIME_ZONE_NAME = "Australia/Sydney"
+DEFUALT_TIME_ZONE = pytz.timezone(DEFUALT_TIME_ZONE_NAME)
 
 class ConstantTimezone:
     def __init__(self):

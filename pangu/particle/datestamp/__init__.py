@@ -1,7 +1,5 @@
-from .duration import Duration
 from .datestamp import Datestamp
 
 __all__ = [
-    "Duration",
     "Datestamp",
 ]

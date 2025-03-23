@@ -143,6 +143,10 @@ class Duration:
             self.as_normalize()
 
     @property
+    def attr(self) -> list:
+        return ["year", "month", "week", "day", "hour", "minute", "second", "millisecond", "microsecond", "nanosecond"]
+
+    @property
     def dict(self) -> Dict[str, int]:
         return {
             unit: getattr(self, unit) for unit in self.TIME_UNITS if hasattr(self, unit)
