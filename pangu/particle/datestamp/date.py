@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 
 import pytz
 
-from pangu.particle.datestamp import Datestamp
+from pangu.particle.datestamp.datestamp import Datestamp
 from pangu.particle.datestamp.time import Time
-from pangu.particle.duration import Duration
+from pangu.particle.duration.duration import Duration
 
 
 class Date(Datestamp):

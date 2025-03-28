@@ -10,7 +10,7 @@ from pangu.particle.constant.timezone import (
     DEFUALT_TIME_ZONE_NAME,
     TIMEZONE_TABLE,
 )
-from pangu.particle.duration import Duration
+from pangu.particle.duration.duration import Duration
 
 
 class Datestamp:
