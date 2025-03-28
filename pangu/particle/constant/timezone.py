@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import pytz # type: ignore
 
+import pytz  # type: ignore
 
 """
     Loaded all timezones from pytz and created a 
@@ -19,6 +19,7 @@ TIMEZONE_TABLE = {
 }
 DEFUALT_TIME_ZONE_NAME = "Australia/Sydney"
 DEFUALT_TIME_ZONE = pytz.timezone(DEFUALT_TIME_ZONE_NAME)
+
 
 class ConstantTimezone:
     def __init__(self):

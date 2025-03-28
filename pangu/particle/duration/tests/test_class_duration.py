@@ -1,7 +1,7 @@
 import unittest
 from datetime import timedelta
 
-from dateutil.relativedelta import relativedelta # type: ignore
+from dateutil.relativedelta import relativedelta  # type: ignore
 
 from pangu.particle.duration.duration import Duration
 
@@ -146,7 +146,7 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(d2.day, 3)
         self.assertEqual(d2.hour, 0)
         self.assertEqual(d2.minute, 0)
-        
+
     def test_set_method_updates_fields(self):
         d = Duration()
         d.set(year=2, second=30, hour=1)
@@ -164,7 +164,9 @@ class TestDuration(unittest.TestCase):
         d = Duration(year=1)
         # 检查 base 是否大约等于 365.25 天
         approx_seconds = 365.25 * 86400
-        self.assertAlmostEqual(d.base, approx_seconds, delta=5000)  # 放宽容差避免测试误差
+        self.assertAlmostEqual(
+            d.base, approx_seconds, delta=5000
+        )  # 放宽容差避免测试误差
 
     def test_nanosecond_initialization(self):
         d = Duration(nanosecond=999)

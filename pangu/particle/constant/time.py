@@ -46,21 +46,23 @@ PRECISE_TIME_UNIT_TABLE = {
 
 TIME_UNITS = list(TIME_UNIT_TABLE.keys())
 LEGAL_TIME_UNITS = Literal[
-    "second", 
-    "minute", 
-    "hour", 
-    "day", 
-    "week", 
-    "month", 
+    "second",
+    "minute",
+    "hour",
+    "day",
+    "week",
+    "month",
     "year",
     "millisecond",
     "microsecond",
     "nanosecond",
 ]
 
+
 class ConstantTime:
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         self.SECOND = SECOND
         self.TIME_UNIT_TABLE = TIME_UNIT_TABLE
         self.PRECISE_TIME_UNIT_TABLE = PRECISE_TIME_UNIT_TABLE
-            

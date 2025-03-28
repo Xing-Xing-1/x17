@@ -23,12 +23,13 @@ STORAGE_UNIT_TABLE = {
     "petabyte": BYTE * STORAGE_RATIO**5,
 }
 
+
 class ConstantStorage:
     def __init__(
-            self,
-            ratio=STORAGE_RATIO,
-            byte=BYTE,
-        ):
+        self,
+        ratio=STORAGE_RATIO,
+        byte=BYTE,
+    ):
         self.BYTE = BYTE if byte is None else byte
         self.STORAGE_RATIO = STORAGE_RATIO if ratio is None else ratio
         self.STORAGE_UNIT_TABLE = {
@@ -49,11 +50,10 @@ class ConstantStorage:
     def set_ratio(self, ratio):
         byte = self.BYTE
         self.__init__(ratio, byte)
-        
+
     def set_byte(self, byte):
         ratio = self.STORAGE_RATIO
         self.__init__(ratio, byte)
-    
+
     def set(self, ratio, byte):
         self.__init__(ratio, byte)
-    

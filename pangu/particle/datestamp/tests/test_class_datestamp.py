@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime
+
 import pytz
 
 from pangu.particle import Datestamp
@@ -25,7 +26,7 @@ class TestDatestamp(unittest.TestCase):
             date_format="%d/%m/%Y",
             time_format="%H-%M-%S",
             date_time_format="%d/%m/%Y %H-%M-%S",
-            time_zone_name="Asia/Tokyo"
+            time_zone_name="Asia/Tokyo",
         )
         self.assertEqual(Datestamp.get_date_format(), "%d/%m/%Y")
         self.assertEqual(Datestamp.get_time_format(), "%H-%M-%S")
@@ -52,12 +53,11 @@ class TestDatestamp(unittest.TestCase):
 
     def test_from_string(self):
         ds = Datestamp.from_string(
-            "2025-03-23 18:30:00", 
-            date_time_format="%Y-%m-%d %H:%M:%S"
+            "2025-03-23 18:30:00", date_time_format="%Y-%m-%d %H:%M:%S"
         )
         self.assertEqual(ds.year, 2025)
         self.assertEqual(ds.hour, 18)
-    
+
     def test_from_dict(self):
         d = {
             "year": 2025,
@@ -66,7 +66,7 @@ class TestDatestamp(unittest.TestCase):
             "hour": 10,
             "minute": 5,
             "second": 45,
-            "time_zone_name": "UTC"
+            "time_zone_name": "UTC",
         }
         ds = Datestamp.from_dict(d)
         self.assertEqual(ds.year, 2025)
@@ -92,7 +92,7 @@ class TestDatestamp(unittest.TestCase):
         ds = Datestamp(2025, 3, 23, 14, 55, 30)
         self.assertIn("2025", str(ds))
         self.assertIn("14", str(ds))
-    
+
     def test_invalid_timezone(self):
         with self.assertRaises(Exception):
             Datestamp(2025, 3, 23, time_zone_name="Invalid/Zone")
@@ -112,7 +112,7 @@ class TestDatestamp(unittest.TestCase):
         self.assertEqual(ds.minute, 0)
         self.assertEqual(ds.second, 0)
         self.assertEqual(ds.microsecond, 0)
-    
+
     def test_configure_partial_format(self):
         Datestamp.configure(date_format="%Y/%m/%d")
         self.assertEqual(Datestamp.get_date_format(), "%Y/%m/%d")
@@ -122,14 +122,14 @@ class TestDatestamp(unittest.TestCase):
 
         Datestamp.configure(date_time_format="%Y/%m/%d %H:%M")
         self.assertEqual(Datestamp.get_date_time_format(), "%Y/%m/%d %H:%M")
-        
+
         Datestamp.reset()
 
     def test_from_string_with_format_and_timezone(self):
         ds = Datestamp.from_string(
             "23/03/2025 22-45-00",
             date_time_format="%d/%m/%Y %H-%M-%S",
-            time_zone_name="Asia/Tokyo"
+            time_zone_name="Asia/Tokyo",
         )
         self.assertEqual(ds.year, 2025)
         self.assertEqual(ds.hour, 22)
@@ -203,6 +203,7 @@ class TestDatestamp(unittest.TestCase):
         self.assertIn("year", desc)
         self.assertIn("12 hour", text)
         self.assertEqual(export_dict["second"], 56)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,9 +1,12 @@
 import unittest
+from datetime import datetime
+
+import pytz
+
+from pangu.particle.datestamp import Datestamp
 from pangu.particle.datestamp.time import Time
 from pangu.particle.duration import Duration
-from pangu.particle.datestamp import Datestamp
-from datetime import datetime
-import pytz
+
 
 class TestTime(unittest.TestCase):
 
@@ -55,7 +58,7 @@ class TestTime(unittest.TestCase):
         t = Time.from_timestamp(ts, time_zone_name="UTC")
         self.assertEqual(t.hour, 22)
         self.assertEqual(t.minute, 30)
-        
+
     def test_to_datestamp_all_fields(self):
         t = Time(15, 45, 10, 250000)
         d = t.to_datestamp(year=2025, month=4, day=5, time_zone_name="UTC")

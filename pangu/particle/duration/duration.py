@@ -61,7 +61,7 @@ class Duration:
         注意: timedelta 不包含 year 或 month 信息.
         :param td: datetime.timedelta 对象
         :param normalise: 是否归一化
-        
+
         :return: Duration 实例
 
         """
@@ -85,7 +85,7 @@ class Duration:
         注意: relativedelta 不包含 week 信息.
         :param rd: dateutil.relativedelta 对象
         :param normalise: 是否归一化
-        
+
         :return: Duration 实例
 
         """
@@ -144,7 +144,18 @@ class Duration:
 
     @property
     def attr(self) -> list:
-        return ["year", "month", "week", "day", "hour", "minute", "second", "millisecond", "microsecond", "nanosecond"]
+        return [
+            "year",
+            "month",
+            "week",
+            "day",
+            "hour",
+            "minute",
+            "second",
+            "millisecond",
+            "microsecond",
+            "nanosecond",
+        ]
 
     @property
     def dict(self) -> Dict[str, int]:
@@ -175,7 +186,7 @@ class Duration:
     def as_normalize(self) -> None:
         total_seconds = self.get_base()
         ordered_units = sorted(
-            self.TIME_UNIT_TABLE.items(), 
+            self.TIME_UNIT_TABLE.items(),
             key=lambda x: TIME_UNIT_TABLE_INDEX[x[0]],
         )[::-1]
 
@@ -285,7 +296,7 @@ class Duration:
 
     def __hash__(self) -> int:
         return hash(tuple(getattr(self, unit, 0) for unit in self.TIME_UNITS))
-    
+
     def __bool__(self) -> bool:
         return self.get_base() != 0
 
