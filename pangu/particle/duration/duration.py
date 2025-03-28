@@ -283,6 +283,12 @@ class Duration:
         scaled = {unit: getattr(self, unit, 0) / divisor for unit in self.TIME_UNITS}
         return Duration(**{k: int(v) for k, v in scaled.items()})
 
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, unit, 0) for unit in self.TIME_UNITS))
+    
+    def __bool__(self) -> bool:
+        return self.get_base() != 0
+
     def describe(self, as_text=False) -> str:
         """
         返回 Duration 对象的描述（人类可读）
@@ -300,6 +306,27 @@ class Duration:
                     label = unit if value == 1 else unit
                     description.append(f"{value} {label}")
             return ", ".join(description) if description else "0 second"
+
+    def set(self, **kwargs) -> None:
+        """
+        设置 Duration 对象的属性
+        :param kwargs: 属性字典
+            - year: int
+            - month: int
+            - week: int
+            - day: int
+            - hour: int
+            - minute: int
+            - second: int
+            - millisecond: int
+            - microsecond: int
+
+        """
+        for key, value in kwargs.items():
+            if key in self.TIME_UNITS and isinstance(value, (int, float)):
+                setattr(self, key, value)
+        if self.normalize:
+            self.as_normalize()
 
     def export(
         self,

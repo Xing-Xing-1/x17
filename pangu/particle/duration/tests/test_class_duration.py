@@ -146,6 +146,92 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(d2.day, 3)
         self.assertEqual(d2.hour, 0)
         self.assertEqual(d2.minute, 0)
+        
+    def test_set_method_updates_fields(self):
+        d = Duration()
+        d.set(year=2, second=30, hour=1)
+        self.assertEqual(d.year, 2)
+        self.assertEqual(d.second, 30)
+        self.assertEqual(d.hour, 1)
+
+    def test_set_method_ignores_invalid_keys(self):
+        d = Duration()
+        d.set(invalid_key=123)  # should not raise error
+        self.assertFalse(hasattr(d, "invalid_key"))
+
+    def test_set_precise_mode(self):
+        Duration.set_precise()
+        d = Duration(year=1)
+        # 检查 base 是否大约等于 365.25 天
+        approx_seconds = 365.25 * 86400
+        self.assertAlmostEqual(d.base, approx_seconds, delta=5000)  # 放宽容差避免测试误差
+
+    def test_nanosecond_initialization(self):
+        d = Duration(nanosecond=999)
+        self.assertEqual(d.nanosecond, 999)
+
+    def test_nanosecond_in_dict_and_export(self):
+        d = Duration(nanosecond=500)
+        self.assertEqual(d.dict["nanosecond"], 500)
+        self.assertEqual(d.export()["nanosecond"], 500)
+
+    def test_hash_and_bool(self):
+        d1 = Duration(minute=1)
+        d2 = Duration()
+        self.assertTrue(bool(d1))
+        self.assertFalse(bool(d2))
+        self.assertIsInstance(hash(d1), int)
+
+    def test_repr_and_str_output(self):
+        d = Duration(year=1, day=2)
+        text = str(d)
+        self.assertIn("year=1", text)
+        self.assertIn("day=2", text)
+
+    def test_add_timedelta(self):
+        d1 = Duration(second=30)
+        td = timedelta(seconds=45)
+        result = d1 + td
+        self.assertEqual(result.second, 15)
+        self.assertEqual(result.minute, 1)
+        self.assertEqual(result.hour, 0)
+
+    def test_add_relativedelta(self):
+        d1 = Duration(month=1)
+        rd = relativedelta(months=2)
+        result = d1 + rd
+        self.assertEqual(result.month, 3)
+
+    def test_sub_timedelta(self):
+        d1 = Duration(minute=3)
+        td = timedelta(seconds=60)
+        result = d1 - td
+        self.assertGreaterEqual(result.second, 0)
+        self.assertEqual(result.minute, 2)
+        self.assertEqual(result.hour, 0)
+        self.assertEqual(result.day, 0)
+
+    def test_sub_relativedelta(self):
+        d1 = Duration(month=5)
+        rd = relativedelta(months=2)
+        result = d1 - rd
+        self.assertEqual(result.month, 3)
+
+    def test_mul_float_and_int(self):
+        d = Duration(minute=2)
+        d2 = d * 1.5
+        self.assertEqual(d2.minute, 3)
+        d3 = d * 2
+        self.assertEqual(d3.minute, 4)
+
+    def test_div_valid_and_invalid(self):
+        d = Duration(hour=2)
+        d2 = d / 2
+        self.assertEqual(d2.hour, 1)
+        with self.assertRaises(ValueError):
+            d / 0
+        with self.assertRaises(ValueError):
+            d / "abc"
 
 
 if __name__ == "__main__":
