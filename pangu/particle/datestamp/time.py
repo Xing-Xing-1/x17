@@ -15,6 +15,17 @@ class Time(Datestamp):
         now = datetime.now(tz)
         return cls(now.hour, now.minute, now.second, now.microsecond, time_zone_name)
 
+    @classmethod
+    def from_string(cls, string: str, time_format: str = None, time_zone_name: str = None) -> "Time":
+        print("Using time_format:", time_format or cls.TIME_FORMAT)
+        t = datetime.strptime(string, time_format or cls.TIME_FORMAT)
+        return cls(t.hour, t.minute, t.second, t.microsecond, time_zone_name)
+    
+    @classmethod
+    def from_timestamp(cls, timestamp: float, time_zone_name: str = None) -> "Time":
+        dt = datetime.fromtimestamp(timestamp, pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME))
+        return cls(dt.hour, dt.minute, dt.second, dt.microsecond, time_zone_name)
+
     def __init__(self, hour=0, minute=0, second=0, microsecond=0,time_zone_name=None):
         now = Datestamp.now(time_zone_name)
         super().__init__(now.year, now.month, now.day, hour, minute, second, microsecond, time_zone_name)
@@ -46,3 +57,16 @@ class Time(Datestamp):
     def __dir__(self):
         base = super().__dir__()
         return [item for item in base if item not in {"year", "month", "day"}]
+
+    def to_datestamp(self, year = None, month = None, day = None, time_zone_name = None) -> Datestamp:
+        return Datestamp(
+            year=year or self.year,
+            month=month or self.month,
+            day=day or self.day,
+            hour=self.hour,
+            minute=self.minute,
+            second=self.second,
+            microsecond=self.microsecond,
+            time_zone_name=time_zone_name or self.time_zone_name,
+        )
+            

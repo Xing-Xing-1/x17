@@ -2,6 +2,8 @@ import unittest
 from pangu.particle.datestamp.date import Date
 from pangu.particle.datestamp.time import Time
 from pangu.particle.duration import Duration
+from datetime import datetime
+import pytz
 
 class TestDate(unittest.TestCase):
 
@@ -45,3 +47,47 @@ class TestDate(unittest.TestCase):
         combined = d.combine(t)
         self.assertEqual(combined.year, 2025)
         self.assertEqual(combined.hour, 14)
+
+    def test_from_string_default_format(self):
+        d = Date.from_string("2025-03-28")
+        self.assertEqual(d.year, 2025)
+        self.assertEqual(d.month, 3)
+        self.assertEqual(d.day, 28)
+
+    def test_from_string_custom_format(self):
+        d = Date.from_string("28/03/2025", "%d/%m/%Y")
+        self.assertEqual(d.month, 3)
+
+    def test_from_timestamp(self):
+        ts = datetime(2025, 3, 28, 14, 30, tzinfo=pytz.UTC).timestamp()
+        d = Date.from_timestamp(ts, time_zone_name="UTC")
+        self.assertEqual(d.year, 2025)
+        self.assertEqual(d.day, 28)
+        
+    def test_time_to_datestamp_full(self):
+        t = Time(14, 30)
+        dt = t.to_datestamp(year=2025, month=3, day=28)
+        self.assertEqual(dt.year, 2025)
+        self.assertEqual(dt.hour, 14)
+
+    def test_time_to_datestamp_partial(self):
+        t = Time(9, 15)
+        dt = t.to_datestamp(day=5)
+        self.assertEqual(dt.day, 5)
+        self.assertEqual(dt.hour, 9)
+
+    def test_time_to_datestamp_with_timezone(self):
+        t = Time(10, 0, time_zone_name="Asia/Tokyo")
+        dt = t.to_datestamp(year=2025, month=4, day=1, time_zone_name="UTC")
+        self.assertEqual(dt.time_zone.zone, "UTC")
+
+    def test_date_to_datestamp_full(self):
+        d = Date(2025, 3, 28)
+        dt = d.to_datestamp(hour=14, minute=30, second=15, microsecond=100000)
+        self.assertEqual(dt.hour, 14)
+        self.assertEqual(dt.microsecond, 100000)
+
+    def test_date_to_datestamp_with_timezone(self):
+        d = Date(2025, 3, 28, time_zone_name="Asia/Shanghai")
+        dt = d.to_datestamp(time_zone_name="UTC")
+        self.assertEqual(dt.time_zone.zone, "UTC")

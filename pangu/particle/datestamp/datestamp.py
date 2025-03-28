@@ -20,6 +20,14 @@ class Datestamp:
     # --- attribute methods ---
 
     @classmethod
+    def reset(cls) -> None:
+        cls.DATE_FORMAT = "%Y-%m-%d"
+        cls.TIME_FORMAT = "%H:%M:%S"
+        cls.DATE_TIME_FORMAT = f"{cls.DATE_FORMAT} {cls.TIME_FORMAT}"
+        cls.TIME_ZONE_NAME = DEFUALT_TIME_ZONE_NAME
+        cls.TIME_ZONE = DEFUALT_TIME_ZONE
+
+    @classmethod
     def configure(
         cls,
         date_format: str = None,

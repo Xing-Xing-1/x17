@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import pytz
+import pytz 
 from pangu.particle.datestamp import Datestamp
 from pangu.particle.duration import Duration
 from pangu.particle.datestamp.time import Time
@@ -16,6 +16,19 @@ class Date(Datestamp):
         tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         now = datetime.now(tz)
         return cls(now.year, now.month, now.day, time_zone_name)
+    
+    @classmethod
+    def from_string(cls, string: str, date_format: str = None, time_zone_name: str = None) -> "Date":
+        tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
+        fmt = date_format or cls.DATE_FORMAT
+        dt = datetime.strptime(string, fmt).replace(tzinfo=tz)
+        return cls(dt.year, dt.month, dt.day, time_zone_name)
+    
+    @classmethod
+    def from_timestamp(cls, timestamp: float, time_zone_name: str = None) -> "Date":
+        tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
+        dt = datetime.fromtimestamp(timestamp, tz)
+        return cls(dt.year, dt.month, dt.day, time_zone_name)
     
     def __init__(self, year, month, day, time_zone_name=None):
         super().__init__(year, month, day, 0, 0, 0, 0, time_zone_name)
@@ -58,3 +71,14 @@ class Date(Datestamp):
         base = super().__dir__()
         return [item for item in base if item not in {"hour", "minute", "second", "microsecond"}]
 
+    def to_datestamp(self, hour=0, minute=0, second=0, microsecond=0, time_zone_name = None,) -> Datestamp:
+        return Datestamp(
+            year=self.year,
+            month=self.month,
+            day=self.day,
+            hour=hour,
+            minute=minute,
+            second=second,
+            microsecond=microsecond,
+            time_zone_name=time_zone_name or self.time_zone_name,
+        )

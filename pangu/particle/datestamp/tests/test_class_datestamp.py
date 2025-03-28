@@ -122,6 +122,8 @@ class TestDatestamp(unittest.TestCase):
 
         Datestamp.configure(date_time_format="%Y/%m/%d %H:%M")
         self.assertEqual(Datestamp.get_date_time_format(), "%Y/%m/%d %H:%M")
+        
+        Datestamp.reset()
 
     def test_from_string_with_format_and_timezone(self):
         ds = Datestamp.from_string(
