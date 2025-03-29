@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from typing import Literal
 """
 	Storage unit constants in bytes and conversions
 	Default unit = byte
@@ -22,7 +23,20 @@ STORAGE_UNIT_TABLE = {
     "pb": BYTE * STORAGE_RATIO**5,
     "petabyte": BYTE * STORAGE_RATIO**5,
 }
-
+LEGAL_STORAGE_UNITS = Literal[
+    "b",
+    "byte",
+    "kb",
+    "kilobyte",
+    "mb",
+    "megabyte",
+    "gb",
+    "gigabyte",
+    "tb",
+    "terabyte",
+    "pb",
+    "petabyte",
+]
 
 class ConstantStorage:
     def __init__(

@@ -25,7 +25,6 @@ export-env:
 full-unit-test:
 	pytest -v 
 
-
 # CACHE CLEARING
 clear-pytest-cache:
 	sh $(SCRIPT_DIR)/clear-pytest-cache.sh

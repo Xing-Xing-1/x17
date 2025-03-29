@@ -70,7 +70,7 @@ class Date(Datestamp):
         for key in self.attr:
             value = getattr(self, key, None)
             attr_parts.append(f"{key}={repr(value)}")
-        return f"Date({', '.join(attr_parts)})"
+        return f"{self.__class__.__name__}({', '.join(attr_parts)})"
 
     def __dir__(self):
         base = super().__dir__()

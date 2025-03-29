@@ -205,7 +205,7 @@ class Duration:
         for unit, value in self.dict.items():
             if value != 0:
                 attributes.append(f"{unit}={value}")
-        return f"Duration({', '.join(attributes)})"
+        return f"{self.__class__.__name__}({', '.join(attributes)})"
 
     def __str__(self) -> str:
         return self.__repr__()
