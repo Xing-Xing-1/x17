@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+from typing import Dict, Literal, Optional, Union
 import pytz
 
 from pangu.particle.datestamp.datestamp import Datestamp
@@ -46,6 +46,16 @@ class Time(Datestamp):
             microsecond,
             time_zone_name,
         )
+        
+    @property
+    def attr(self) -> list:
+        return [
+            "hour",
+            "minute",
+            "second",
+            "microsecond",
+            "time_zone_name",
+        ]
 
     def __add__(self, other):
         if isinstance(other, Duration):
@@ -100,3 +110,11 @@ class Time(Datestamp):
             microsecond=self.microsecond,
             time_zone_name=time_zone_name or self.time_zone_name,
         )
+
+    def export(self) -> Dict[str, Union[int, float]]:
+        """
+        Export datestamp object as a dictionary
+        :return: dict: Dictionary representation of the datestamp
+
+        """
+        return {key: getattr(self, key, 0) for key in self.attr}

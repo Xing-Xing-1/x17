@@ -72,6 +72,10 @@ class TestText(unittest.TestCase):
         t = Text("hello_world.py")
         self.assertTrue(t.wildcard_match("*.py"))
         self.assertFalse(t.wildcard_match("*.txt"))
+        
+    def test_export(self):
+        t = Text("hello")
+        self.assertEqual(t.export(), {"content": "hello"})
 
 if __name__ == "__main__":
     unittest.main()

@@ -339,12 +339,7 @@ class Duration:
         if self.normalize:
             self.as_normalize()
 
-    def export(
-        self,
-    ) -> Dict[str, Union[int, float]]:
-        """
-        导出 Duration 对象为指定单位的值
-        :return: 转换后的值
-
-        """
-        return {unit: getattr(self, unit, 0) for unit in self.TIME_UNITS}
+    def export(self) -> Dict[str, Union[int, float, str]]:
+        return {
+            key: value for key, value in self.dict.items()
+        }

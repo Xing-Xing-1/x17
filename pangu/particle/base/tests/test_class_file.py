@@ -38,6 +38,12 @@ class TestBaseFile(unittest.TestCase):
         d = f.to_dict()
         self.assertEqual(d["path"], "path.txt")
         self.assertEqual(d["content"], "hello")
+        
+    def test_export(self):
+        f = DummyFile(DummyPath("path.txt"), "hello")
+        d = f.export()
+        self.assertEqual(d["path"], "path.txt")
+        self.assertEqual(d["content"], "hello")
 
 if __name__ == "__main__":
     unittest.main()

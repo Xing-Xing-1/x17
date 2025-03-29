@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+from typing import Dict, Literal, Optional, Union
 import hashlib
 
 """
@@ -21,3 +21,9 @@ class ConstantHash:
 
     def get_hash_algorithm(self, algo):
         return self.HASH_ALGORITHMS[algo]
+
+    def export(self) -> Dict[str, Union[any]]:
+        return {
+            key: value for key, value in self.dict.items()
+            if value not in (None, set())
+        }

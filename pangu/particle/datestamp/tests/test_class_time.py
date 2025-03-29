@@ -82,3 +82,12 @@ class TestTime(unittest.TestCase):
         d = t.to_datestamp()
         self.assertEqual(d.hour, 6)
         self.assertEqual(d.day, t.day)  # inherited from original datetime
+
+    def test_export(self):
+        t = Time(14, 30)
+        exported = t.export()
+        self.assertEqual(exported["hour"], 14)
+        self.assertEqual(exported["minute"], 30)
+        self.assertEqual(exported["second"], 0)
+        self.assertEqual(exported["microsecond"], 0)
+        self.assertEqual(exported["time_zone_name"], Time.TIME_ZONE_NAME)

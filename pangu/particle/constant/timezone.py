@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 from datetime import datetime
-
+from typing import Dict, Literal, Optional, Union
 import pytz  # type: ignore
 
 """
@@ -28,4 +27,10 @@ class ConstantTimezone:
                 pytz.timezone(timezone).utcoffset(datetime.now()).total_seconds() / 3600
             )
             for timezone in pytz.all_timezones
+        }
+
+    def export(self) -> Dict[str, Union[int, float, str]]:
+        return {
+            key: value for key, value in self.dict.items()
+            if value not in (None, "", 0, [], {}, set())
         }

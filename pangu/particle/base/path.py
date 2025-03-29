@@ -21,3 +21,8 @@ class BasePath(ABC):
     @abstractmethod
     def to_uri(self) -> str:
         ...
+
+    def export(self) -> dict:
+        return {
+            "raw": self.raw,
+        }

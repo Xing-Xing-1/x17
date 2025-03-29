@@ -204,6 +204,17 @@ class TestDatestamp(unittest.TestCase):
         self.assertIn("12 hour", text)
         self.assertEqual(export_dict["second"], 56)
 
-
+    def test_export(self):
+        ds = Datestamp(2025, 3, 23, 12, 34, 56)
+        export_dict = ds.export()
+        self.assertEqual(export_dict["year"], 2025)
+        self.assertEqual(export_dict["month"], 3)
+        self.assertEqual(export_dict["day"], 23)
+        self.assertEqual(export_dict["hour"], 12)
+        self.assertEqual(export_dict["minute"], 34)
+        self.assertEqual(export_dict["second"], 56)
+        self.assertEqual(export_dict["microsecond"], 0)
+        self.assertEqual(export_dict["time_zone_name"], 'Australia/Sydney')
+        
 if __name__ == "__main__":
     unittest.main()

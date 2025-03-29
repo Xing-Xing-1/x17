@@ -4,7 +4,7 @@
 	Time unit constants in seconds and conversions
 
 """
-from typing import Literal
+from typing import Dict, Literal, Optional, Union
 
 SECOND = 1
 TIME_UNIT_TABLE = {
@@ -66,3 +66,9 @@ class ConstantTime:
         self.SECOND = SECOND
         self.TIME_UNIT_TABLE = TIME_UNIT_TABLE
         self.PRECISE_TIME_UNIT_TABLE = PRECISE_TIME_UNIT_TABLE
+
+    def export(self) -> Dict[str, Union[any]]:
+        return {
+            key: value for key, value in self.dict.items()
+            if value not in (None, set())
+        }

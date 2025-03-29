@@ -94,3 +94,13 @@ class TestDate(unittest.TestCase):
         d = Date(2025, 3, 28, time_zone_name="Asia/Shanghai")
         dt = d.to_datestamp(time_zone_name="UTC")
         self.assertEqual(dt.time_zone.zone, "UTC")
+    
+    def test_export(self):
+        d = Date(2025, 3, 28)
+        exported = d.export()
+        self.assertEqual(exported["year"], 2025)
+        self.assertEqual(exported["month"], 3)
+        self.assertEqual(exported["day"], 28)
+
+if __name__ == "__main__":
+    unittest.main()

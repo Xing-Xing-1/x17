@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from typing import Dict, Literal, Optional, Union
 from pangu.particle.constant.hash import HASH_ALGORITHMS
 import fnmatch
 
@@ -95,4 +96,8 @@ class Text:
     ):  
         return fnmatch.fnmatch(self.content, wildcard)
     
-    
+    def export(self) -> Dict[str, Union[any]]:
+        return {
+            key: value for key, value in self.dict.items()
+            if value not in (None, set())
+        }

@@ -89,5 +89,11 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(s.unit, "mb")
         self.assertAlmostEqual(s.size, 2)
 
+    def test_export(self):
+        s = Storage(100, "kb")
+        exported = s.export()
+        self.assertEqual(exported["size"], 100)
+        self.assertEqual(exported["unit"], "kb")
+
 if __name__ == "__main__":
     unittest.main()

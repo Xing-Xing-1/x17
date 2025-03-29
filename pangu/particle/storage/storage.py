@@ -104,3 +104,10 @@ class Storage:
         self.size = readable.size
         self.unit = readable.unit
         return self
+    
+    def export(self) -> Dict[str, Union[any]]:
+        return {
+            key: value for key, value in self.dict.items()
+            if value not in (None, set())
+        }
+        

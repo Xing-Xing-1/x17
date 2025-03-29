@@ -23,3 +23,9 @@ class BaseFile:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(path={self.path})"
+
+    def export(self) -> dict:
+        return {
+            "path": str(self.path),
+            "content": self.content,
+        }

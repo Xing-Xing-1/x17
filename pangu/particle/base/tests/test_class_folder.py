@@ -29,6 +29,12 @@ class TestBaseFolder(unittest.TestCase):
     def test_mkdir(self):
         f = DummyFolder(DummyPath("/dir"))
         self.assertTrue(f.mkdir())
+    
+    def test_export(self):
+        f = DummyFolder(DummyPath("/dir"))
+        exported = f.export()
+        self.assertEqual(exported["path"], "/dir")
+        self.assertEqual(exported["path"], str(f.path))
 
 if __name__ == "__main__":
     unittest.main()

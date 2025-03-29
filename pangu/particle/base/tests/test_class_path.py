@@ -29,6 +29,12 @@ class TestBasePath(unittest.TestCase):
     def test_to_uri(self):
         path = DummyPath("abc/xyz")
         self.assertEqual(path.to_uri(), "uri://abc/xyz")
+        
+    def test_export(self):
+        path = DummyPath("/some/path")
+        exported = path.export()
+        self.assertEqual(exported["raw"], "/some/path")
+        self.assertEqual(exported["raw"], path.raw)
 
 if __name__ == "__main__":
     unittest.main()

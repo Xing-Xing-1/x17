@@ -235,6 +235,17 @@ class TestDuration(unittest.TestCase):
         with self.assertRaises(ValueError):
             d / "abc"
 
+    def test_export(self):
+        d = Duration(year=1, month=2, day=3)
+        export_data = d.export()
+        self.assertEqual(export_data["year"], 1)
+        self.assertEqual(export_data["month"], 2)
+        self.assertEqual(export_data["day"], 3)
+        self.assertEqual(export_data["hour"], 0)
+        self.assertEqual(export_data["minute"], 0)
+        self.assertEqual(export_data["second"], 0)
+        self.assertEqual(export_data["microsecond"], 0)
+        self.assertEqual(export_data["nanosecond"], 0)
 
 if __name__ == "__main__":
     unittest.main()
