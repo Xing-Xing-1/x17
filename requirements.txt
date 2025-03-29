@@ -1,7 +1,0 @@
-pip
-pytz
-pytest
-nltk
-numpy
-pathlib
-fs
