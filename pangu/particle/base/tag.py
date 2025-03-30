@@ -3,7 +3,6 @@
 from typing import Dict, Literal, Optional, Union
 
 
-
 class BaseTag:
     @classmethod
     def from_dict(cls, data: dict):
@@ -33,6 +32,9 @@ class BaseTag:
     def __str__(self):
         return self.__repr__()
     
+    def __len__(self):
+        return len(self.dict)
+    
     def __eq__(self, other):
         if isinstance(other, BaseTag):
             return self.key == other.key and self.value == other.value
@@ -52,5 +54,4 @@ class BaseTag:
     def export(self) -> Dict[str, any]:
         return {
             key: value for key, value in self.dict.items()
-            if value is not None
         }
