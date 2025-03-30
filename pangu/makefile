@@ -33,5 +33,5 @@ clear-python-cache:
 	sh $(SCRIPT_DIR)/clear-python-cache.sh
 
 clear-cache:
-	clear-pytest-cache
-	clear-python-cache
+	@make clear-pytest-cache
+	@make clear-python-cache
