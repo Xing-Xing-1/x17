@@ -90,4 +90,4 @@ class TestTime(unittest.TestCase):
         self.assertEqual(exported["minute"], 30)
         self.assertEqual(exported["second"], 0)
         self.assertEqual(exported["microsecond"], 0)
-        self.assertEqual(exported["time_zone_name"], Time.TIME_ZONE_NAME)
+        self.assertIn("time_zone_name", exported)

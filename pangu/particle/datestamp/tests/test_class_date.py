@@ -101,6 +101,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(exported["year"], 2025)
         self.assertEqual(exported["month"], 3)
         self.assertEqual(exported["day"], 28)
+        self.assertIn("time_zone_name", exported)
 
 if __name__ == "__main__":
     unittest.main()
