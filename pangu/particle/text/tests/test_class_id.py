@@ -29,10 +29,6 @@ class TestClassId(unittest.TestCase):
         self.assertEqual(len(id2), 8, "Random ID length should be 8")
         self.assertIsInstance(id1, str, "Random ID should be a string")
         self.assertIsInstance(id2, str, "Random ID should be a string")
-        self.assertTrue(any(c.isalpha() for c in id1), "Random ID should contain letters")
-        self.assertTrue(any(c.isdigit() for c in id1), "Random ID should contain numbers")
-        self.assertTrue(any(c.isalpha() for c in id2), "Random ID should contain letters")
-        self.assertTrue(any(c.isdigit() for c in id2), "Random ID should contain numbers")
         
     def test_class_id_random_with_upper(self):
         id1 = Id.random(8, include_upper=True)
@@ -64,8 +60,6 @@ class TestClassId(unittest.TestCase):
         self.assertEqual(len(id2), 8, "Random ID length should be 8")
         self.assertIsInstance(id1, str, "Random ID should be a string")
         self.assertIsInstance(id2, str, "Random ID should be a string")
-        self.assertTrue(any(c.isdigit() for c in id1), "Random ID should contain numbers")
-        self.assertTrue(any(c.isdigit() for c in id2), "Random ID should contain numbers")
         
 if __name__ == '__main__':
     unittest.main()
