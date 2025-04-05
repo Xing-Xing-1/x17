@@ -19,7 +19,7 @@ fi
 # Install main requirements
 if [ -f "requirements.txt" ]; then
     echo "📄 Installing from requirements.txt..."
-    pip install -r requirements.txt
+    pip install -r requirements.txt --no-cache-dir
 else
     echo "⚠️ requirements.txt not found."
 fi
@@ -27,7 +27,7 @@ fi
 # Install dev requirements if exists
 if [ -f "requirements-dev.txt" ]; then
     echo "📄 Installing from requirements-dev.txt..."
-    pip install -r requirements-dev.txt
+    pip install -r requirements-dev.txt --no-cache-dir
 fi
 
 # Additional tools
