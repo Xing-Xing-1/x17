@@ -6,7 +6,6 @@ from pangu.particle.constant.storage import BYTE
 from pangu.particle.constant.storage import STORAGE_RATIO
 from pangu.particle.constant.storage import STORAGE_UNIT_TABLE
 from pangu.particle.constant.storage import LEGAL_STORAGE_UNITS
-from pangu.particle.constant.storage import ConstantStorage
 
 class Storage:
     def __init__(

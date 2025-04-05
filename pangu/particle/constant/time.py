@@ -58,17 +58,3 @@ LEGAL_TIME_UNITS = Literal[
     "nanosecond",
 ]
 
-
-class ConstantTime:
-    def __init__(
-        self,
-    ):
-        self.SECOND = SECOND
-        self.TIME_UNIT_TABLE = TIME_UNIT_TABLE
-        self.PRECISE_TIME_UNIT_TABLE = PRECISE_TIME_UNIT_TABLE
-
-    def export(self) -> Dict[str, Union[any]]:
-        return {
-            key: value for key, value in self.dict.items()
-            if value not in (None, set())
-        }
