@@ -24,6 +24,7 @@ class LogEvent:
         name: Optional[str] = "",
         level: str = "INFO",
         datestamp: Optional[str] = None,
+        **kwargs: Any,
     ):
         self.id = Id.uuid(5)
         self.base_name = name
@@ -31,6 +32,8 @@ class LogEvent:
         self.datestamp = datestamp or Datestamp.now().datestamp_str
         self.level = level.upper()
         self.message = message
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def __repr__(self):
         attr_parts = []
@@ -45,11 +48,8 @@ class LogEvent:
     @property
     def attr(self) -> List[str]:
         return [
-            "id",
-            "name",
-            "datestamp",
-            "level",
-            "message",
+            key for key in self.__dict__.keys()
+            if not key.startswith("_")
         ]
 
     @property

@@ -1,8 +1,9 @@
 from typing import Optional, Dict, Any, Union, List
-from pangu.particle.remote.url import Url
 import json
-import os
 
+from pangu.particle.datestamp.datestamp import Datestamp
+from pangu.particle.log.log_event import LogEvent
+from pangu.particle.remote.url import Url
 
 class Response:
     """
@@ -74,6 +75,21 @@ class Response:
     def text(self) -> str:
         return self.body.decode(self.encoding, errors="replace")
 
+    @property
+    def log(self) -> LogEvent:
+        return [
+            LogEvent(
+                message=self.text,
+                name=self.__class__.__name__,
+                level="INFO" if self.success else "ERROR",
+                datestamp=Datestamp.now().datestamp_str,
+                status=self.status,
+                body=self.body.decode(self.encoding, errors="replace"),
+                url=str(self.url),
+                error=self.error,
+            )
+        ]
+
     def __repr__(self):
         attr_parts = []
         for key in self.attr:
@@ -97,3 +113,4 @@ class Response:
         self,
     ) -> Dict[str, Any]:
         return self.dict
+

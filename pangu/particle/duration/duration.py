@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 from typing import Dict, Literal, Optional, Union
+import time
 
-from dateutil.relativedelta import relativedelta  # type: ignore
+from dateutil.relativedelta import relativedelta
 
 from pangu.particle.constant.time import (
     LEGAL_TIME_UNITS,
@@ -341,3 +342,11 @@ class Duration:
 
     def export(self) -> Dict[str, Union[int, float, str]]:
         return {key: value for key, value in self.dict.items()}
+
+    def wait(self) -> None:
+        """
+        等待指定的时间段
+        :return: None
+
+        """
+        time.sleep(self.get_base())

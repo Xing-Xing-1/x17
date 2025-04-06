@@ -54,7 +54,12 @@ class Url:
             self.host = result.hostname or host
             self.port = result.port or port
             self.path = result.path or path
-            self.query = parse_qs(result.query) or query
+            
+            parsed_query = parse_qs(result.query or "")
+            self.query = parsed_query.copy()
+            if query:
+                self.query.update(query)
+
             self.user = result.username or user
             self.password = result.password or password
         else:
@@ -62,7 +67,7 @@ class Url:
             self.host = host
             self.port = port
             self.path = path or ""
-            self.query = query or {}
+            self.query = query.copy() if query else {}
             self.user = user
             self.password = password
 
@@ -127,6 +132,11 @@ class Url:
             user=self.user,
             password=self.password,
         )
+        
+    def join_querys(self, query: Dict[str, Any]) -> "Url":
+        for key, value in query.items():
+            self.join_query(key, value)
+        return self
 
     def join_query(self, key: str, value: Any) -> "Url":
         if key in self.query:
