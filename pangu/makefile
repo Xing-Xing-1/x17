@@ -35,3 +35,7 @@ clear-python-cache:
 clear-cache:
 	@make clear-pytest-cache
 	@make clear-python-cache
+
+# LINTING
+format-python-code:
+	sh $(SCRIPT_DIR)/format-python-code.sh
