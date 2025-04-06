@@ -1,4 +1,3 @@
-
 import queue
 import threading
 from typing import Dict, List, Optional, Any
@@ -11,7 +10,7 @@ from pangu.particle.datestamp.datestamp import Datestamp
 class LogCore:
     def __init__(
         self,
-        name: Optional[str] = '',
+        name: Optional[str] = "",
     ):
         self.id = Id.uuid(8)
         self.base_name = name
@@ -35,10 +34,8 @@ class LogCore:
         with self._lock:
             if group is None:
                 return {
-                    g: {
-                        s: [e.export() for e in streams]
-                        for s, streams in grp.items()
-                    } for g, grp in self.groups.items()
+                    g: {s: [e.export() for e in streams] for s, streams in grp.items()}
+                    for g, grp in self.groups.items()
                 }
             if stream is None:
                 return {

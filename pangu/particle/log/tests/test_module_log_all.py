@@ -5,16 +5,16 @@ from pangu.particle.log.log_group import LogGroup
 from pangu.particle.log.log_stream import LogStream
 from pangu.particle.log.log_event import LogEvent
 
-class TestLogSystemIntegration(unittest.TestCase):
 
+class TestLogSystemIntegration(unittest.TestCase):
     """
     Test the integration of the logging system with core, groups, and streams.
     This test verifies that the logging system can handle multiple streams
     and groups, and that events are correctly logged and exported.
-    
+
     Args:
         unittest.TestCase: Inherits from the unittest TestCase class.
-        
+
     """
 
     def test_stream_alone_logging(self):
@@ -46,7 +46,7 @@ class TestLogSystemIntegration(unittest.TestCase):
 
         stream.info("Tracking page view")
         stream.warn("Slow analytics response")
-        
+
         time.sleep(0.1)
         export = core.export(group.name, "track")
         self.assertEqual(len(export), 2)
@@ -87,7 +87,7 @@ class TestLogSystemNoCoreExtended(unittest.TestCase):
 
     Args:
         unittest.TestCase: Inherits from the unittest TestCase class.
-        
+
     """
 
     def setUp(self):

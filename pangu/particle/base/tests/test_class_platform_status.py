@@ -2,16 +2,16 @@ import unittest
 from enum import Enum
 from pangu.particle.base.platform_status import BasePlatformStatus
 
+
 class TestPlatformStatus(unittest.TestCase):
 
     def test_enum_values_and_descriptions(self):
         self.assertEqual(BasePlatformStatus.READY.value, 3)
         self.assertEqual(BasePlatformStatus.READY.description, "Platform ready")
-        self.assertEqual(BasePlatformStatus.INIT.dict, {
-            "name": "INIT",
-            "value": 1,
-            "description": "Platform nitialized"
-        })
+        self.assertEqual(
+            BasePlatformStatus.INIT.dict,
+            {"name": "INIT", "value": 1, "description": "Platform nitialized"},
+        )
 
     def test_from_value(self):
         self.assertEqual(BasePlatformStatus.from_value(2), BasePlatformStatus.LOADED)

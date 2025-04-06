@@ -2,18 +2,31 @@ import unittest
 from pangu.particle.base.file import BaseFile
 from pangu.particle.base.path import BasePath
 
+
 class DummyPath(BasePath):
-    def is_absolute(self): return True
-    def is_remote(self): return False
-    def to_uri(self): return self.raw
+    def is_absolute(self):
+        return True
+
+    def is_remote(self):
+        return False
+
+    def to_uri(self):
+        return self.raw
+
 
 class DummyFile(BaseFile):
     def __init__(self, path, content=None):
         super().__init__(path, content)
 
-    def read(self): return self.content or ""
-    def write(self, content): self.content = content
-    def exists(self): return self.content is not None
+    def read(self):
+        return self.content or ""
+
+    def write(self, content):
+        self.content = content
+
+    def exists(self):
+        return self.content is not None
+
 
 class TestBaseFile(unittest.TestCase):
 
@@ -38,12 +51,13 @@ class TestBaseFile(unittest.TestCase):
         d = f.to_dict()
         self.assertEqual(d["path"], "path.txt")
         self.assertEqual(d["content"], "hello")
-        
+
     def test_export(self):
         f = DummyFile(DummyPath("path.txt"), "hello")
         d = f.export()
         self.assertEqual(d["path"], "path.txt")
         self.assertEqual(d["content"], "hello")
+
 
 if __name__ == "__main__":
     unittest.main()

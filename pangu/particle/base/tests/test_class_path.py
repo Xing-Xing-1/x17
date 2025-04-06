@@ -1,6 +1,7 @@
 import unittest
 from pangu.particle.base.path import BasePath
 
+
 class DummyPath(BasePath):
     def is_absolute(self) -> bool:
         return self.raw.startswith("/")
@@ -10,6 +11,7 @@ class DummyPath(BasePath):
 
     def to_uri(self) -> str:
         return f"uri://{self.raw}"
+
 
 class TestBasePath(unittest.TestCase):
 
@@ -29,12 +31,13 @@ class TestBasePath(unittest.TestCase):
     def test_to_uri(self):
         path = DummyPath("abc/xyz")
         self.assertEqual(path.to_uri(), "uri://abc/xyz")
-        
+
     def test_export(self):
         path = DummyPath("/some/path")
         exported = path.export()
         self.assertEqual(exported["raw"], "/some/path")
         self.assertEqual(exported["raw"], path.raw)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from pangu.particle.base.platform_status import BasePlatformStatus
 
+
 class BasePlatform:
     def __init__(self, name: str, config: Optional[Dict[str, Any]] = None):
         self.name = name
@@ -21,7 +22,7 @@ class BasePlatform:
         logger = logging.getLogger(self.name)
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter('[%(levelname)s][%(name)s] %(message)s')
+            formatter = logging.Formatter("[%(levelname)s][%(name)s] %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
         logger.setLevel(logging.INFO)
@@ -42,8 +43,8 @@ class BasePlatform:
 
     def _is_docker(self) -> bool:
         try:
-            with open('/proc/1/cgroup', 'rt') as f:
-                return 'docker' in f.read() or 'kubepods' in f.read()
+            with open("/proc/1/cgroup", "rt") as f:
+                return "docker" in f.read() or "kubepods" in f.read()
         except Exception:
             return False
 

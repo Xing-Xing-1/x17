@@ -1,6 +1,7 @@
 from typing import List
 from .path import BasePath
 
+
 class BaseFolder:
     def __init__(self, path: BasePath):
         self.path = path

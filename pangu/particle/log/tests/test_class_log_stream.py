@@ -1,6 +1,7 @@
 import unittest
 from pangu.particle.log.log_event import LogEvent
 
+
 class TestLogEvent(unittest.TestCase):
 
     def test_creation(self):
@@ -31,7 +32,7 @@ class TestLogEvent(unittest.TestCase):
         input_dict = {
             "message": "Loaded from dict",
             "level": "debug",
-            "datestamp": "2025-04-01 12:00:00"
+            "datestamp": "2025-04-01 12:00:00",
         }
         base = LogEvent("fallback")
         event = base.from_dict(input_dict)
@@ -39,6 +40,7 @@ class TestLogEvent(unittest.TestCase):
         self.assertEqual(event.message, "Loaded from dict")
         self.assertEqual(event.level, "DEBUG")
         self.assertEqual(event.datestamp, "2025-04-01 12:00:00")
+
 
 if __name__ == "__main__":
     unittest.main()

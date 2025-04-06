@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 import logging
 from typing import Optional
@@ -14,8 +13,8 @@ if TYPE_CHECKING:
 
 class LogStream:
     def __init__(
-        self, 
-        name: Optional[str] = '', 
+        self,
+        name: Optional[str] = "",
         group: Optional[LogGroup] = None,
         format: Optional[str] = None,
     ):
@@ -23,7 +22,7 @@ class LogStream:
         self.base_name = name
         self.name = name or f"{self.__class__.__name__}:{self.id}"
         self.group = group or None
-        self.log_format = format or '[%(asctime)s][%(levelname)s][%(name)s] %(message)s'
+        self.log_format = format or "[%(asctime)s][%(levelname)s][%(name)s] %(message)s"
         self.log_node = self._setup_node()
 
     @property
@@ -34,7 +33,7 @@ class LogStream:
             "group",
             "log_format",
         ]
-    
+
     @property
     def dict(self) -> dict[str, str]:
         return {key: getattr(self, key) for key in self.attr}
@@ -45,7 +44,7 @@ class LogStream:
             value = getattr(self, key, None)
             attr_parts.append(f"{key}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attr_parts)})"
-    
+
     def __str__(self):
         return self.__repr__()
 
@@ -60,24 +59,23 @@ class LogStream:
         return log_node
 
     def log(self, level: str, message: str):
-        event = LogEvent(level = level, message = message)
+        event = LogEvent(level=level, message=message)
         if self.group:
             self.group.receive(self.name, event)
         else:
             self.log_node.log(
-                getattr(logging, level.upper(), logging.INFO), 
+                getattr(logging, level.upper(), logging.INFO),
                 message,
             )
 
-    def info(self, message: str): 
+    def info(self, message: str):
         self.log("INFO", message)
-        
-    def warn(self, message: str): 
+
+    def warn(self, message: str):
         self.log("WARNING", message)
-        
-    def error(self, message: str): 
+
+    def error(self, message: str):
         self.log("ERROR", message)
-        
-    def debug(self, message: str): 
+
+    def debug(self, message: str):
         self.log("DEBUG", message)
-    

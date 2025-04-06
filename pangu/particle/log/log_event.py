@@ -4,8 +4,9 @@ from typing import Optional, List, Dict, Any
 from pangu.particle.datestamp.datestamp import Datestamp
 from pangu.particle.text.id import Id
 
+
 class LogEvent:
-    
+
     def from_dict(self, data: Dict[str, Any]) -> LogEvent:
         """
         Create a LogEvent instance from a dictionary.
@@ -16,12 +17,12 @@ class LogEvent:
             level=data.get("level", "INFO"),
             datestamp=data.get("datestamp", None),
         )
-    
+
     def __init__(
-        self, 
-        message: str, 
-        name: Optional[str] = '',
-        level: str = "INFO", 
+        self,
+        message: str,
+        name: Optional[str] = "",
+        level: str = "INFO",
         datestamp: Optional[str] = None,
     ):
         self.id = Id.uuid(5)
@@ -30,18 +31,17 @@ class LogEvent:
         self.datestamp = datestamp or Datestamp.now().datestamp_str
         self.level = level.upper()
         self.message = message
-        
-        
+
     def __repr__(self):
         attr_parts = []
         for key in self.attr:
             value = getattr(self, key, None)
             attr_parts.append(f"{key}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attr_parts)})"
-    
+
     def __str__(self):
         return self.__repr__()
-    
+
     @property
     def attr(self) -> List[str]:
         return [
@@ -51,10 +51,10 @@ class LogEvent:
             "level",
             "message",
         ]
-    
+
     @property
     def dict(self) -> Dict[str, Any]:
         return {key: getattr(self, key) for key in self.attr}
-    
+
     def export(self) -> Dict[str, str]:
         return self.dict

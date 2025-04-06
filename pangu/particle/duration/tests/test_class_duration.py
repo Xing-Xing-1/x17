@@ -247,5 +247,6 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(export_data["microsecond"], 0)
         self.assertEqual(export_data["nanosecond"], 0)
 
+
 if __name__ == "__main__":
     unittest.main()

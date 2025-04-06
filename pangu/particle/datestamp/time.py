@@ -46,7 +46,7 @@ class Time(Datestamp):
             microsecond,
             time_zone_name,
         )
-        
+
     @property
     def attr(self) -> list:
         return [

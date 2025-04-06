@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from typing import Dict, Literal, Optional, Union
+
 """
 	Storage unit constants in bytes and conversions
 	Default unit = byte

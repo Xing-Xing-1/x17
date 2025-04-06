@@ -5,6 +5,7 @@ from typing import Optional, Dict, Any, Union
 from pangu.particle.remote.url import Url
 from pangu.particle.remote.response import Response
 
+
 class Call:
     def __init__(
         self,
@@ -16,7 +17,7 @@ class Call:
         timeout: int = 10,
     ):
         self.method = method.upper()
-        self.url = Url(url = url) if isinstance(url, str) else url
+        self.url = Url(url=url) if isinstance(url, str) else url
         self.headers = headers or {}
         self.query = query or {}
         self.body = body
@@ -27,10 +28,10 @@ class Call:
         data = None
 
         if isinstance(self.body, dict):
-            data = json.dumps(self.body).encode('utf-8')
+            data = json.dumps(self.body).encode("utf-8")
             self.headers.setdefault("Content-Type", "application/json")
         elif isinstance(self.body, str):
-            data = self.body.encode('utf-8')
+            data = self.body.encode("utf-8")
         elif isinstance(self.body, bytes):
             data = self.body
 
@@ -56,7 +57,7 @@ class Call:
                 headers=dict(e.headers),
                 body=e.read(),
                 url=full_url,
-                error=str(e)
+                error=str(e),
             )
         except Exception as e:
             return Response(

@@ -1,6 +1,7 @@
 from typing import Optional
 from .path import BasePath
 
+
 class BaseFile:
     def __init__(self, path: BasePath, content: Optional[str] = None):
         self.path = path

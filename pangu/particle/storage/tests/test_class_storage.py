@@ -1,6 +1,7 @@
 import unittest
 from pangu.particle.storage.storage import Storage
 
+
 class TestStorage(unittest.TestCase):
 
     def test_init_and_dict(self):
@@ -94,6 +95,7 @@ class TestStorage(unittest.TestCase):
         exported = s.export()
         self.assertEqual(exported["size"], 100)
         self.assertEqual(exported["unit"], "kb")
+
 
 if __name__ == "__main__":
     unittest.main()

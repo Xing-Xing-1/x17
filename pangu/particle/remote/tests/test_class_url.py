@@ -2,6 +2,7 @@ import unittest
 from urllib.parse import urlencode
 from pangu.particle.remote.url import Url
 
+
 class TestUrl(unittest.TestCase):
 
     def test_init_basic(self):
@@ -37,7 +38,7 @@ class TestUrl(unittest.TestCase):
             "path": "/v1/data",
             "query": {"k": ["v"]},
             "user": "admin",
-            "password": "1234"
+            "password": "1234",
         }
         url = Url.from_dict(data)
         self.assertEqual(url.scheme, "https")
@@ -46,7 +47,9 @@ class TestUrl(unittest.TestCase):
         self.assertEqual(url.user, "admin")
 
     def test_link_property(self):
-        url = Url(scheme="https", host="api.example.com", query={"a": "1", "b": ["2", "3"]})
+        url = Url(
+            scheme="https", host="api.example.com", query={"a": "1", "b": ["2", "3"]}
+        )
         link = url.link
         expected_query = urlencode(url.query, doseq=True)
         self.assertTrue(link.startswith("https://api.example.com"))
@@ -89,10 +92,14 @@ class TestUrl(unittest.TestCase):
         self.assertEqual(exported["host"], "example.com")
         self.assertEqual(exported["path"], "/test")
         self.assertEqual(exported["query"], {"key": ["value"]})
-        
+
     def test_repr(self):
         url = Url(host="example.com", path="/test")
-        self.assertEqual(repr(url), "Url(link='https://example.com/test', scheme='https', host='example.com', path='/test')")
+        self.assertEqual(
+            repr(url),
+            "Url(link='https://example.com/test', scheme='https', host='example.com', path='/test')",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

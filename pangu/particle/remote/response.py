@@ -3,11 +3,13 @@ from pangu.particle.remote.url import Url
 import json
 import os
 
+
 class Response:
     """
     Represents an HTTP response.
-    
+
     """
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Response":
         return cls(
@@ -17,12 +19,11 @@ class Response:
             url=data.get("url", ""),
             error=data.get("error", ""),
         )
-        
+
     @classmethod
     def from_json(cls, json_str: str) -> "Response":
         data = json.loads(json_str)
         return cls.from_dict(data)
-
 
     def __init__(
         self,
@@ -57,23 +58,22 @@ class Response:
             "url": self.url,
             "error": self.error,
         }
-    
-    
+
     @property
     def success(self) -> bool:
         return 200 <= self.status < 300
-    
+
     @property
     def encoding(self) -> str:
         content_type = self.headers.get("Content-Type", "")
         if "charset=" in content_type:
             return content_type.split("charset=")[-1].strip()
         return "utf-8"
-    
+
     @property
     def text(self) -> str:
         return self.body.decode(self.encoding, errors="replace")
-    
+
     def __repr__(self):
         attr_parts = []
         for key in self.attr:
@@ -81,16 +81,19 @@ class Response:
             if value:
                 attr_parts.append(f"{key}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attr_parts)})"
-    
+
     def __str__(self):
         return self.__repr__()
-    
+
     def json(self, check=True) -> Union[Dict[str, Any], Any]:
         try:
             return json.loads(self.text)
         except Exception as e:
-            if check: raise e
+            if check:
+                raise e
             return {}
-        
-    def export(self,) -> Dict[str, Any]:
+
+    def export(
+        self,
+    ) -> Dict[str, Any]:
         return self.dict

@@ -5,6 +5,7 @@ from pangu.particle.log.log_group import LogGroup
 from pangu.particle.log.log_stream import LogStream
 from pangu.particle.log.log_core import LogCore
 
+
 class TestLogGroup(unittest.TestCase):
 
     def test_initialization_and_properties(self):
@@ -40,6 +41,7 @@ class TestLogGroup(unittest.TestCase):
         time.sleep(0.1)
         core_export = core.export(group.name, "streamA")
         self.assertEqual(core_export[0]["message"], "pushed to core")
+
 
 if __name__ == "__main__":
     unittest.main()

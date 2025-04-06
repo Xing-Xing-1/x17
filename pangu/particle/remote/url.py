@@ -1,13 +1,14 @@
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
 from typing import Optional, Dict, Any, List, Union
 
+
 class Url:
     """
     RemoteURL 是用于远程访问资源的统一地址抽象，支持：
     - 从字符串解析 URL
     - 拼接 path、添加 query 参数
     - 导出为标准 URL 字符串或结构化字典
-    
+
     """
 
     @classmethod
@@ -22,7 +23,7 @@ class Url:
             user=parsed.username,
             password=parsed.password,
         )
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Url":
         return cls(
@@ -34,10 +35,10 @@ class Url:
             user=data.get("user"),
             password=data.get("password"),
         )
-        
+
     def __init__(
         self,
-        url = None,
+        url=None,
         scheme: str = "https",
         host: str = "",
         port: Optional[int] = None,
@@ -46,7 +47,7 @@ class Url:
         user: Optional[str] = None,
         password: Optional[str] = None,
     ):
-        
+
         if url:
             result = urlparse(url)
             self.scheme = result.scheme or scheme
@@ -74,7 +75,7 @@ class Url:
             auth = f"{self.user}:{self.password}@" if self.password else f"{self.user}@"
             endpoint = auth + endpoint
         query_str = urlencode(self.query, doseq=True)
-        return urlunparse((self.scheme, endpoint, self.path, '', query_str, ''))
+        return urlunparse((self.scheme, endpoint, self.path, "", query_str, ""))
 
     @property
     def attr(self) -> list[str]:
@@ -92,7 +93,7 @@ class Url:
     @property
     def dict(self) -> dict:
         return {key: getattr(self, key) for key in self.attr}
-    
+
     def __repr__(self):
         attr_parts = []
         for key in self.attr:
@@ -100,21 +101,23 @@ class Url:
             if value:
                 attr_parts.append(f"{key}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attr_parts)})"
-    
+
     def __str__(self):
         return self.link
-    
+
     def __truediv__(self, segment: str) -> "Url":
         return self.join_path(segment)
 
     def __add__(self, other: str) -> "Url":
         return self.join_path(other)
-    
+
     def __radd__(self, other: str) -> "Url":
         return self.join_path(other)
-    
+
     def join_path(self, *segments: Union[str, List[str]]) -> "Url":
-        joined_path = self.path.rstrip("/") + "/" + "/".join(s.strip("/") for s in segments)
+        joined_path = (
+            self.path.rstrip("/") + "/" + "/".join(s.strip("/") for s in segments)
+        )
         return Url(
             scheme=self.scheme,
             host=self.host,
@@ -140,7 +143,7 @@ class Url:
         if key in self.query:
             del self.query[key]
         return self
-    
+
     def parent(self) -> "Url":
         parts = self.path.rstrip("/").split("/")
         if len(parts) > 1:
@@ -156,7 +159,7 @@ class Url:
             user=self.user,
             password=self.password,
         )
-        
+
     def redact(self) -> "Url":
         return Url(
             scheme=self.scheme,
@@ -167,7 +170,7 @@ class Url:
             user=self.user,
             password="****" if self.password else None,
         )
-    
+
     def export(self) -> Dict[str, Any]:
         return {
             "url": self.link,

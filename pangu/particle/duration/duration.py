@@ -340,6 +340,4 @@ class Duration:
             self.as_normalize()
 
     def export(self) -> Dict[str, Union[int, float, str]]:
-        return {
-            key: value for key, value in self.dict.items()
-        }
+        return {key: value for key, value in self.dict.items()}

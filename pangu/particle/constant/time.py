@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-	Time unit constants in seconds and conversions
+Time unit constants in seconds and conversions
 
 """
 from typing import Dict, Literal, Optional, Union
@@ -57,4 +57,3 @@ LEGAL_TIME_UNITS = Literal[
     "microsecond",
     "nanosecond",
 ]
-

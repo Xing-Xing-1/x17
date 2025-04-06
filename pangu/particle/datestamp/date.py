@@ -37,7 +37,7 @@ class Date(Datestamp):
 
     def __init__(self, year, month, day, time_zone_name=None):
         super().__init__(year, month, day, 0, 0, 0, 0, time_zone_name)
-        
+
     @property
     def attr(self) -> list:
         return [

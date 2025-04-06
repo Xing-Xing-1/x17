@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class BasePath(ABC):
     def __init__(self, raw: str):
         self.raw = raw
@@ -11,16 +12,13 @@ class BasePath(ABC):
         return f"{self.__class__.__name__}(raw={self.raw})"
 
     @abstractmethod
-    def is_absolute(self) -> bool:
-        ...
+    def is_absolute(self) -> bool: ...
 
     @abstractmethod
-    def is_remote(self) -> bool:
-        ...
+    def is_remote(self) -> bool: ...
 
     @abstractmethod
-    def to_uri(self) -> str:
-        ...
+    def to_uri(self) -> str: ...
 
     def export(self) -> dict:
         return {

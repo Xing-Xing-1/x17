@@ -7,29 +7,30 @@ from pangu.particle.constant.storage import STORAGE_RATIO
 from pangu.particle.constant.storage import STORAGE_UNIT_TABLE
 from pangu.particle.constant.storage import LEGAL_STORAGE_UNITS
 
+
 class Storage:
     def __init__(
-        self, 
-        size: Optional[int] = 0, 
+        self,
+        size: Optional[int] = 0,
         unit: LEGAL_STORAGE_UNITS = "b",
     ):
         self.size = size
         self.unit = unit
-        
+
     @property
     def dict(self) -> Dict[str, Union[int, str]]:
         return {
             "size": self.size,
             "unit": self.unit,
         }
-        
+
     @property
     def base(self) -> Union[int, float]:
         return self.get_base()
-    
+
     def get_base(self) -> Union[int, float]:
         return self.size * STORAGE_UNIT_TABLE[self.unit] / STORAGE_UNIT_TABLE["b"]
-        
+
     def __repr__(self) -> str:
         attributes = []
         for unit, value in self.dict.items():
@@ -39,9 +40,9 @@ class Storage:
 
     def __str__(self) -> str:
         return self.__repr__()
-    
+
     # --- operators ---
-    
+
     def __add__(self, other: "Storage"):
         if isinstance(other, Storage):
             return Storage(
@@ -49,12 +50,17 @@ class Storage:
                 "b",
             ).to_unit(self.unit)
         if isinstance(other, (int, float)):
-            return Storage(self.size + other, self.unit,)
-        raise TypeError(f"unsupported operand type(s) for +: 'Storage' and '{type(other).__name__}'")
-    
+            return Storage(
+                self.size + other,
+                self.unit,
+            )
+        raise TypeError(
+            f"unsupported operand type(s) for +: 'Storage' and '{type(other).__name__}'"
+        )
+
     def __radd__(self, other: "Storage"):
         return self.__add__(other)
-    
+
     def __eq__(self, other: "Storage"):
         if isinstance(other, Storage):
             return self.base == other.base
@@ -69,8 +75,13 @@ class Storage:
                 "b",
             ).to_unit(self.unit)
         if isinstance(other, (int, float)):
-            return Storage(self.size - other, self.unit,)
-        raise TypeError(f"unsupported operand type(s) for -: 'Storage' and '{type(other).__name__}'")
+            return Storage(
+                self.size - other,
+                self.unit,
+            )
+        raise TypeError(
+            f"unsupported operand type(s) for -: 'Storage' and '{type(other).__name__}'"
+        )
 
     def __mul__(self, other: Union[int, float]):
         return Storage(
@@ -89,7 +100,9 @@ class Storage:
 
     def get_readable_unit(self, threshold: float = 1.0) -> str:
         for unit in STORAGE_UNIT_TABLE:
-            new_size = self.size * STORAGE_UNIT_TABLE[self.unit] / STORAGE_UNIT_TABLE[unit]
+            new_size = (
+                self.size * STORAGE_UNIT_TABLE[self.unit] / STORAGE_UNIT_TABLE[unit]
+            )
             if new_size >= threshold and new_size < 1024:
                 return unit
         return self.unit
@@ -103,10 +116,8 @@ class Storage:
         self.size = readable.size
         self.unit = readable.unit
         return self
-    
+
     def export(self) -> Dict[str, Union[any]]:
         return {
-            key: value for key, value in self.dict.items()
-            if value not in (None, set())
+            key: value for key, value in self.dict.items() if value not in (None, set())
         }
-        

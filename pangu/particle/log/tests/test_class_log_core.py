@@ -3,12 +3,13 @@ import time
 from pangu.particle.log.log_core import LogCore
 from pangu.particle.log.log_event import LogEvent
 
+
 class TestLogCore(unittest.TestCase):
 
     def test_initialization(self):
         core = LogCore(name="central")
         self.assertIn("central", core.name)
-        self.assertIsInstance(core.queue, type(__import__('queue').Queue()))
+        self.assertIsInstance(core.queue, type(__import__("queue").Queue()))
         self.assertTrue(core.id)
 
     def test_push_and_export_single(self):
@@ -40,6 +41,7 @@ class TestLogCore(unittest.TestCase):
         self.assertIn("kernel", all_export["system"])
         self.assertIn("net", all_export["system"])
         self.assertEqual(len(all_export["system"]["kernel"]), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

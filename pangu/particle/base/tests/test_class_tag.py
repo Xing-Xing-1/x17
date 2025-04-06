@@ -1,6 +1,7 @@
 import unittest
 from pangu.particle.base.tag import BaseTag
 
+
 class TestBaseTag(unittest.TestCase):
 
     def test_init_and_dict(self):
