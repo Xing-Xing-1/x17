@@ -42,7 +42,7 @@ class Url:
         host: str = "",
         port: Optional[int] = None,
         path: str = "",
-        query: Optional[Dict[str, Any]] = None,
+        query: Optional[Dict[str, Any]] = {},
         user: Optional[str] = None,
         password: Optional[str] = None,
     ):
@@ -97,7 +97,8 @@ class Url:
         attr_parts = []
         for key in self.attr:
             value = getattr(self, key, None)
-            attr_parts.append(f"{key}={repr(value)}")
+            if value:
+                attr_parts.append(f"{key}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attr_parts)})"
     
     def __str__(self):

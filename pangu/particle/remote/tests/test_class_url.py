@@ -92,6 +92,7 @@ class TestUrl(unittest.TestCase):
         
     def test_repr(self):
         url = Url(host="example.com", path="/test")
+        self.assertEqual(repr(url), "Url(link='https://example.com/test', scheme='https', host='example.com', path='/test')")
 
 if __name__ == "__main__":
     unittest.main()

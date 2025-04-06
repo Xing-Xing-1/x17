@@ -31,6 +31,7 @@ class LogEvent:
         self.level = level.upper()
         self.message = message
         
+        
     def __repr__(self):
         attr_parts = []
         for key in self.attr:
