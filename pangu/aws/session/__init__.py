@@ -1,5 +1,5 @@
-from .session import Session
+from .session import AwsSession
 
 __all__ = [
-    "Session",
+    "AwsSession",
 ]
