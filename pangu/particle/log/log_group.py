@@ -6,7 +6,7 @@ from pangu.particle.log.log_stream import LogStream
 from pangu.particle.log.log_core import LogCore
 
 from pangu.particle.text.id import Id
-from pangu.particle.datestamp.datestamp import Datestamp
+from pangu.particle.datestamp import Datestamp
 
 
 class LogGroup:
@@ -19,6 +19,8 @@ class LogGroup:
         self.base_name = name
         self.name = name or f"{self.__class__.__name__}:{self.id}"
         self.core = core
+        if self.core:
+            self.core.register_group(self)
         self.streams: Dict[str, List[LogEvent]] = {}
         self.queue: queue.Queue = queue.Queue()
         self._lock = threading.Lock()
@@ -49,6 +51,7 @@ class LogGroup:
 
     def register_stream(self, stream: LogStream):
         stream.group = self
+        self.streams[stream.name] = []
         return stream
 
     def receive(self, stream_name: str, event: LogEvent):

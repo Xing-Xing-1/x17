@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional, List, Dict, Any
 
-from pangu.particle.datestamp.datestamp import Datestamp
+from pangu.particle.datestamp import Datestamp
 from pangu.particle.text.id import Id
 
 

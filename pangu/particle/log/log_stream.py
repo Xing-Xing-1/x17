@@ -3,10 +3,8 @@ import logging
 from typing import Optional
 from typing import TYPE_CHECKING
 
-from pangu.particle.datestamp.datestamp import Datestamp
 from pangu.particle.text.id import Id
 from pangu.particle.log.log_event import LogEvent
-
 if TYPE_CHECKING:
     from pangu.particle.log.log_group import LogGroup
 
@@ -17,6 +15,8 @@ class LogStream:
         name: Optional[str] = "",
         group: Optional[LogGroup] = None,
         format: Optional[str] = None,
+        verbose: Optional[bool] = False,
+        **kwargs,
     ):
         self.id = Id.uuid(8)
         self.base_name = name
@@ -24,6 +24,7 @@ class LogStream:
         self.group = group or None
         self.log_format = format or "[%(asctime)s][%(levelname)s][%(name)s] %(message)s"
         self.log_node = self._setup_node()
+        self.verbose = verbose
 
     @property
     def attr(self) -> list[str]:
@@ -58,24 +59,25 @@ class LogStream:
             log_node.addHandler(handler)
         return log_node
 
-    def log(self, level: str, message: str):
+    def log(self, message: str, level: str = "INFO"):
         event = LogEvent(level=level, message=message)
         if self.group:
             self.group.receive(self.name, event)
-        else:
+        
+        if self.verbose:
             self.log_node.log(
                 getattr(logging, level.upper(), logging.INFO),
                 message,
             )
 
     def info(self, message: str):
-        self.log("INFO", message)
+        self.log(message, "INFO")
 
     def warn(self, message: str):
-        self.log("WARNING", message)
+        self.log(message, "WARNING")
 
     def error(self, message: str):
-        self.log("ERROR", message)
+        self.log(message, "ERROR")
 
     def debug(self, message: str):
-        self.log("DEBUG", message)
+        self.log(message, "DEBUG")

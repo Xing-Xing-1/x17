@@ -1,2 +1,6 @@
 pytz
 python-dateutil>=2.8
+pyawscron
+holidays
+boto3
+moto[boto3]

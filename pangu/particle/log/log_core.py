@@ -1,10 +1,12 @@
 import queue
 import threading
 from typing import Dict, List, Optional, Any
+from typing import TYPE_CHECKING
 
-from pangu.particle.log.log_event import LogEvent
 from pangu.particle.text.id import Id
-from pangu.particle.datestamp.datestamp import Datestamp
+from pangu.particle.log.log_event import LogEvent
+if TYPE_CHECKING:
+    from pangu.particle.log.log_group import LogGroup
 
 
 class LogCore:
@@ -20,6 +22,12 @@ class LogCore:
         self._lock = threading.Lock()
         self._thread = threading.Thread(target=self._consume, daemon=True)
         self._thread.start()
+
+    def register_group(self, group: "LogGroup") -> str:
+        with self._lock:
+            self.groups.setdefault(group.name, {})
+        group.core = self
+        return group.name
 
     def push(self, group: str, stream: str, event: LogEvent):
         self.queue.put((group, stream, event))
