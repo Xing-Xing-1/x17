@@ -1,5 +1,4 @@
 import pytest
-from moto import mock_aws
 from pangu.aws.base.aws_client import AwsClient
 
 @pytest.fixture
