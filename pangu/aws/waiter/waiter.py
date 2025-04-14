@@ -37,20 +37,20 @@ class Waiter:
         params: Optional[Dict[str, Any]] = None,
         description: Optional[str] = None,
         interval: int = 1,
-        attempts: int = 60,
+        attempts: int = 5,
         timeout: Optional[int] = None,
         invert: bool = False,
         compare_mode: str = "==",
         log_stream: Optional[LogStream] = None,
     ):
         self.getter = getter
-        self.getter_name = getter.__name__
-        self.get_path = get_path
+        self.getter_name = getattr(getter, "__name__", str(getter))
+        self.get_path = get_path or "@"
         self.expected = set(expected) if isinstance(expected, list) else {expected}
         self.params = params or {}
         self.interval = interval
         if timeout is not None:
-            self.attempts = math.ceil(timeout / interval)
+            self.attempts = max(1, math.ceil(timeout / interval))
         else:
             self.attempts = attempts
         self.invert = invert
@@ -85,7 +85,7 @@ class Waiter:
                 attributes.append(f"{unit}={str(value)}")
         return f"{self.__class__.__name__}({', '.join(attributes)})"
 
-    def wait(self, check=True) -> Any:
+    def wait(self, check=True) -> bool:
         """
         Run the waiter until the expected condition is met or timeout occurs.
 
@@ -95,8 +95,14 @@ class Waiter:
                 result = self.getter(**self.params)
                 actual = jmespath.search(self.get_path, result)
             except Exception as e:
+                if check: 
+                    raise e
                 self.log_stream.warn(f"Attempt {attempt}: Error - {str(e)}")
                 actual = None
+
+            self.log_stream.debug(
+                f"Attempt {attempt}: actual={actual}, expected={self.expected}"
+            )
 
             match = self.evaluate(actual)
             if self.invert:
@@ -106,7 +112,7 @@ class Waiter:
                 self.log_stream.info(
                     f"Success: {self.description} matched {self.compare_mode} {self.expected} (got {actual})"
                 )
-                return actual
+                return True
 
             self.log_stream.debug(
                 f"Attempt {attempt}/{self.attempts}: actual={actual}, expected={self.expected}"
@@ -117,7 +123,7 @@ class Waiter:
             raise TimeoutError(
                 f"Timeout: {self.description} did not meet expected value(s) {self.expected}"
             )
-        return None
+        return False
 
     def evaluate(self, actual: Any) -> bool:
         """
@@ -135,8 +141,8 @@ class Waiter:
                 x not in actual for x in self.expected
             )
         elif self.compare_mode == "exists":
-            return actual is not None
+            return actual not in (None, {}, [], "")
         elif self.compare_mode == "not exists":
-            return actual is None
+            return actual in (None, {}, [], "")
         else:
             raise ValueError(f"Unsupported compare_mode: {self.compare_mode}")

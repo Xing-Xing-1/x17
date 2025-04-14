@@ -4,3 +4,4 @@ pyawscron
 holidays
 boto3
 moto[boto3]
+jmespath

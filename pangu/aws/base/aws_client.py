@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import jmespath
 
 from typing import Optional, Dict, Union, Any, List
 from pangu.particle.log.log_stream import LogStream
@@ -12,14 +13,6 @@ class AwsClient:
     This class provides a common interface for AWS clients, including logging and plugin registration.
     Normally set the log module to log group.
     
-    Attributes:
-        account_id (str): The AWS account ID.
-        region (str): The AWS region.
-        service (str): The AWS service name.
-        plugin (Dict[str, Any]): A dictionary of plugins.
-        log_stream (LogStream): The log stream for logging.
-        max_paginate (int): The maximum number of items to paginate through.
-
     """
 
     REGION_NAME = "ap-southeast-2"
@@ -53,11 +46,7 @@ class AwsClient:
     def register_plugin(self, name: str, plugin: Any):
         """
         Register a plugin to the client.
-        Args:
-            name (str): The name of the plugin.
-            plugin (Any): The plugin to register.
-        Returns:
-            Tuple[str, Any]: The name and plugin.
+        
         """
         if name in self.plugin:
             raise ValueError(f"Plugin {name} already registered.")
@@ -88,11 +77,7 @@ class AwsClient:
     ):
         """
         Log a message to the log stream.
-        Args:
-            message (str): The message to log.
-            level (str): The log level (e.g., INFO, DEBUG, ERROR).
-            **kwargs: Additional keyword arguments for logging.
-
+        
         """
         self.log_stream.log(
             level=level,
@@ -108,12 +93,7 @@ class AwsClient:
     ) -> Union[Dict[str, Any], None]:
         """
         Pop out a list of data by index.
-        Args:
-            data (List): The list to pop.
-            index (int): The index to pop.
-            default (Any, optional): The default value if the index is out of range.
-        Returns:
-            Union[Dict[str, Any], None]: The popped value or default.
+        When the index is out of range, return the default value.
 
         """
         if index < 0 or index >= len(data):
@@ -132,13 +112,8 @@ class AwsClient:
     ) -> List[Dict[str, Any]]:
         """
         Return a slice of the list between start and end indexes.
-        Args:
-            data (List): The list to slice.
-            start (int): The starting index.
-            end (int, optional): The ending index (inclusive-exclusive). Defaults to end of list.
-        Returns:
-            List[Any]: The sliced sublist.
-
+        If end is None, return the rest of the list.
+        
         """
         if end is None:
             end = len(data)
@@ -151,10 +126,20 @@ class AwsClient:
         """
         Strip None values from a group of kwargs.
         And return a dictionary of the remaining values.
-        Args:
-            **kwargs: The keyword arguments to strip.
-        Returns:
-            Dict: A dictionary of the remaining values.
-
+        This is useful for filtering out None values from the parameters passed to AWS API calls.
+        
         """
         return {k: v for k, v in kwargs.items() if v is not None}
+
+    def search_metadata(
+        self,
+        data: Union[Dict[str, Any], List[Dict[str, Any]]],
+        expression: str,
+    ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+        """
+        Use jmespath to query the data.
+        This is useful for filtering out data from the AWS API response.
+        
+        """
+        return jmespath.search(expression, data)
+    

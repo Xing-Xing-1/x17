@@ -51,7 +51,7 @@ def test_waiter_success_modes(sample_getter_success, compare_mode, expected, get
         attempts=3,
     )
     result = waiter.wait()
-    assert result == jmespath.search(get_path, sample_getter_success())
+    assert result is True
 
 
 def test_waiter_inverted_mode(sample_getter_failure):
@@ -65,7 +65,7 @@ def test_waiter_inverted_mode(sample_getter_failure):
         attempts=3,
     )
     result = waiter.wait()
-    assert result == "pending"
+    assert result
 
 
 def test_waiter_timeout(sample_getter_failure):
@@ -91,7 +91,7 @@ def test_waiter_soft_timeout(sample_getter_failure):
         attempts=2,
     )
     result = waiter.wait(check=False)
-    assert result is None
+    assert not result
 
 
 def test_waiter_invalid_compare_mode(sample_getter_success):

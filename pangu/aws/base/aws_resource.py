@@ -15,15 +15,6 @@ class AwsResource:
     This class provides a common interface for AWS resources, including logging and plugin registration.
     Normally set the log module to log stream.
     
-    Attributes:
-        resource_id (str): The resource ID.
-        account_id (str): The AWS account ID.
-        region (str): The AWS region.
-        plugin (Dict[str, Any]): A dictionary of plugins.
-        log_stream (LogStream): The log stream for logging.
-        log_group (LogGroup): The log group for logging.
-        raw (Dict[str, Any]): Raw data for the resource.
-        
     """
     
     @classmethod

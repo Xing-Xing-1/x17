@@ -1,8 +1,11 @@
-from pangu.aws.base.aws_client import AwsClient
-from pangu.particle.duration import Duration
 import boto3
 from typing import Optional, Dict
 
+from pangu.particle.log.log_group import LogGroup
+from pangu.particle.log.log_stream import LogStream
+from pangu.aws.base.aws_client import AwsClient
+from pangu.particle.duration import Duration
+from pangu.aws.session import AwsSession
 
 class StsClient(AwsClient):
     """
@@ -15,6 +18,7 @@ class StsClient(AwsClient):
         self,
         account_id: Optional[str] = None,
         region: Optional[str] = None,
+        session: Optional[AwsSession] = None,
         **kwargs
     ):
         super().__init__(
@@ -23,7 +27,13 @@ class StsClient(AwsClient):
             region=region,
             **kwargs
         )
-        self.session = boto3.session.Session(region_name=self.region)
+        if session:
+            self.session = session
+        else:
+            self.session = AwsSession(
+                region_name=self.region,
+                aws_account_id=self.account_id,
+            )
         self.client = self.session.client("sts")
         self._load()
 

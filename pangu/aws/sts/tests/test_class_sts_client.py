@@ -9,7 +9,7 @@ from pangu.particle.duration import Duration
 @mock_aws
 def test_sts_client_initialization_and_identity():
     client = boto3.client("sts", region_name="ap-southeast-2")
-    client.get_caller_identity()
+    client.get_caller_identity()  # this triggers moto internal initialization
 
     sts = StsClient()
     
