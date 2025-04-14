@@ -6,6 +6,7 @@ from base import ParserBase
 class ClassParser(ParserBase):
     """
     Parses a Python file to extract class-level metadata and structure.
+    
     """
 
     def parse(self) -> List[Dict[str, Any]]:

@@ -256,7 +256,7 @@ class RSSClient(AwsClient):
         This method will delete the workgroup and all associated resources.
 
         """
-        response = self.client.delete_workgroup(
+        self.client.delete_workgroup(
             workgroupName=workgroup_name,
         )
         if wait:
@@ -273,7 +273,7 @@ class RSSClient(AwsClient):
         This method will delete the namespace and all associated resources.
         
         """
-        response = self.client.delete_namespace(
+        self.client.delete_namespace(
             namespaceName=namespace_name,
         )
         if wait:
