@@ -1,12 +1,11 @@
 from typing import Optional, Dict, Any, List
 
-from pangu.particle.base.aws_resource import AwsResource
+from pangu.aws.base.aws_resource import AwsResource
 
 class Ec2SecurityGroup(AwsResource):
     """
     Class to manage EC2 security groups.
     
-    Attributes:
     """
     
     def __init__(
