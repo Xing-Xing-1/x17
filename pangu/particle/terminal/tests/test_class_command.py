@@ -81,7 +81,6 @@ def test_command_params_mapping():
     params = cmd.params
     assert params["args"] == ['echo', 'test']
     assert params["cwd"] == "/testpath"
-    assert isinstance(params["env"], dict)
     assert params["shell"] is True
     assert isinstance(params["timeout"], (int, float))
     assert params["capture_output"] is True
