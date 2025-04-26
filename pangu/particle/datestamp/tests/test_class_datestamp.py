@@ -199,22 +199,14 @@ class TestDatestamp(unittest.TestCase):
         ds = Datestamp(2025, 3, 23, 12, 34, 56)
         desc = ds.describe()
         text = ds.describe(as_text=True)
-        export_dict = ds.export()
         self.assertIn("year", desc)
         self.assertIn("12 hour", text)
-        self.assertEqual(export_dict["second"], 56)
 
     def test_export(self):
         ds = Datestamp(2025, 3, 23, 12, 34, 56)
         exported = ds.export()
-        self.assertEqual(exported["year"], 2025)
-        self.assertEqual(exported["month"], 3)
-        self.assertEqual(exported["day"], 23)
-        self.assertEqual(exported["hour"], 12)
-        self.assertEqual(exported["minute"], 34)
-        self.assertEqual(exported["second"], 56)
-        self.assertEqual(exported["microsecond"], 0)
-        self.assertIn("time_zone_name", exported)
+        self.assertIn("datestamp", exported)
+        self.assertIn("timezone", exported)
 
 
 if __name__ == "__main__":

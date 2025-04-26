@@ -3,102 +3,164 @@
 from typing import Dict, Literal, Optional, Union
 from pangu.particle.constant.hash import HASH_ALGORITHMS
 import fnmatch
+import re
 
+class Text(str):
+    """
+    A subclass of Python's built-in str, enriched with utility methods
+    such as digest generation, wildcard matching, and export support.
+    
+    """
 
-class Text:
-    def __init__(
-        self,
-        content: str = "",
-    ):
-        self.content = content
+    def __new__(cls, content: str = ""):
+        return super(Text, cls).__new__(cls, content)
+
+    def __init__(self, content: str = ""):
+        # no need to set self.content explicitly; str content is the instance itself
+        pass
+
+    # --- Lazy Properties ---
+    
+    @property
+    def dict(self) -> Dict[str, str]:
+        if not str(self):
+            return {}
+        else:
+            return {"content": str(self)}
 
     @property
-    def dict(self):
-        return {
-            "content": self.content,
-        }
-
-    def __str__(self) -> str:
-        return self.content
-
-    def __len__(self) -> int:
-        return len(self.content)
+    def upper(self) -> str:
+        return str(self).upper()
+    
+    @property
+    def lower(self) -> str:
+        return str(self).lower()
+    
+    @property
+    def snake(self) -> str:
+        return str(self.to_snake())
+    
+    @property
+    def camel(self) -> str:
+        return str(self.to_camel())
 
     def __repr__(self) -> str:
-        attributes = []
-        for unit, value in self.dict.items():
-            if value:
-                if len(value) > 10:
-                    value = f"{value[:10]}..."
-                attributes.append(f"{unit}={value}")
-        return f"{self.__class__.__name__}({', '.join(attributes)})"
+        preview = str(self)
+        if len(preview) > 10:
+            preview = f"{preview[:10]}..."
+        return f"{self.__class__.__name__}(content={preview})"
 
-    # --- operators ---
-    def __add__(self, other) -> str:
+    # --- Operations ---
+    def __len__(self) -> int:
+        return len(str(self))
+    
+    def __eq__(self, other: Union[str, "Text"]) -> bool:
         if isinstance(other, str):
-            return Text(self.content + other)
-        if isinstance(other, Text):
-            return Text(self.content + other.content)
-        raise TypeError(f"Unsupported type for addition: {type(other)}")
-
-    def __radd__(self, other) -> str:
+            return str(self) == other
+        elif isinstance(other, Text):
+            return super(Text, self).__eq__(other)
+        return False
+    
+    def __ne__(self, other: Union[str, "Text"]) -> bool:
         if isinstance(other, str):
-            return Text(other + self.content)
-        if isinstance(other, Text):
-            return Text(other.content + self.content)
-        raise TypeError(f"Unsupported type for addition: {type(other)}")
+            return str(self) != other
+        elif isinstance(other, Text):
+            return super(Text, self).__ne__(other)
+        return True
+    
+    def __lt__(self, other: Union[str, "Text"]) -> bool:
+        if isinstance(other, str):
+            return str(self) < other
+        elif isinstance(other, Text):
+            return super(Text, self).__lt__(other)
+        return False
+    
+    def __le__(self, other: Union[str, "Text"]) -> bool:
+        if isinstance(other, str):
+            return str(self) <= other
+        elif isinstance(other, Text):
+            return super(Text, self).__le__(other)
+        return False
+    
+    def __gt__(self, other: Union[str, "Text"]) -> bool:
+        if isinstance(other, str):
+            return str(self) > other
+        elif isinstance(other, Text):
+            return super(Text, self).__gt__(other)
+        return False
+    
+    def __ge__(self, other: Union[str, "Text"]) -> bool:
+        if isinstance(other, str):
+            return str(self) >= other
+        elif isinstance(other, Text):
+            return super(Text, self).__ge__(other)
+        return False
+    
+    def __contains__(self, item: Union[str, "Text"]) -> bool:
+        if isinstance(item, str):
+            return str(item) in str(self)
+        elif isinstance(item, Text):
+            return super(Text, self).__contains__(item)
+        return False
+    
+    def __add__(self, other: Union[str, "Text"]) -> str:
+        if isinstance(other, str):
+            return str(self) + other
+        elif isinstance(other, Text):
+            return super(Text, self).__add__(other)
+        return str(self) + str(other)
+    
+    def __radd__(self, other: Union[str, "Text"]) -> str:
+        if isinstance(other, str):
+            return other + str(self)
+        elif isinstance(other, Text):
+            return super(Text, self).__radd__(other)
+        return str(other) + str(self)
+    
+    def __mul__(self, other: int) -> str:
+        if isinstance(other, int):
+            return str(self) * other
+        return str(self) * int(other)
+    
+    def __rmul__(self, other: int) -> str:
+        if isinstance(other, int):
+            return str(self) * other
+        return str(self) * int(other)
+    
+    # --- Methods ---
 
-    def __eq__(self, value):
-        if isinstance(value, str):
-            return self.content == value
-        if isinstance(value, Text):
-            return self.content == value.content
-        raise TypeError(f"Unsupported type for equality: {type(value)}")
-
-    def __ne__(self, value):
-        if isinstance(value, str):
-            return self.content != value
-        if isinstance(value, Text):
-            return self.content != value.content
-        raise TypeError(f"Unsupported type for inequality: {type(value)}")
-
-    def __upper__(self) -> str:
-        return self.content.upper()
-
-    def __lower__(self) -> str:
-        return self.content.lower()
-
-    def as_upper(self):
-        self.content = self.content.upper()
-
-    def as_lower(self):
-        self.content = self.content.lower()
-
-    def encode(self):
-        return self.content.encode()
-
-    def as_digest(
-        self,
-        algorithm: str = "sha256",
-    ):
+    def as_digest(self, algorithm: str = "sha256") -> "Text":
+        """
+        Hashes the content using the specified algorithm.
+        Available algorithms defined in HASH_ALGORITHMS.
+        
+        """
         hash_function = HASH_ALGORITHMS[algorithm]
         hash_function.update(self.encode())
-        self.content = hash_function.hexdigest()
+        return Text(hash_function.hexdigest())
 
-    def to_digest(
-        self,
-        algorithm: str = "sha256",
-    ):
-        self.as_digest(algorithm)
-        return Text(self.content)
+    def wildcard_match(self, pattern: str) -> bool:
+        return fnmatch.fnmatch(str(self), pattern)
 
-    def wildcard_match(
-        self,
-        wildcard: str,
-    ):
-        return fnmatch.fnmatch(self.content, wildcard)
+    def to_snake(self) -> "Text":
+        """
+        Converts the string to snake_case.
+        
+        """
+        s = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', str(self))
+        s = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s)
+        return Text(s.lower())
 
-    def export(self) -> Dict[str, Union[any]]:
+    def to_camel(self) -> "Text":
+        """
+        Converts the string to camelCase.
+        
+        """
+        parts = str(self).split('_')
+        return Text(parts[0] + ''.join(word.capitalize() for word in parts[1:]))
+
+    def export(self) -> Dict[str, Union[str]]:
         return {
-            key: value for key, value in self.dict.items() if value not in (None, set())
+            key: value for key, value in self.dict.items()
+            if value not in (None, set())
         }

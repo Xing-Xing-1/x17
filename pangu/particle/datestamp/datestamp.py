@@ -179,6 +179,18 @@ class Datestamp:
         )
 
     @classmethod
+    def from_iso(cls, string: str, time_zone_name: str = None) -> "Datestamp":
+        """
+        Create Datestamp from ISO 8601 format string.
+        Example: "2025-04-26T11:00:00"
+        """
+        return cls.from_string(
+            string=string,
+            date_time_format="%Y-%m-%dT%H:%M:%S",
+            time_zone_name=time_zone_name,
+        )
+
+    @classmethod
     def from_dict(
         cls,
         dictionary: Dict[str, Union[int, str]],
@@ -434,7 +446,9 @@ class Datestamp:
     def export(self) -> Dict[str, Union[int, float]]:
         """
         Export datestamp object as a dictionary
-        :return: dict: Dictionary representation of the datestamp
-
+        
         """
-        return {key: getattr(self, key, 0) for key in self.attr}
+        return {
+            "datestamp": self.datestamp_str,
+            "timezone": self.time_zone_name,
+        }
