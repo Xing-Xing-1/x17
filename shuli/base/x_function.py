@@ -11,14 +11,17 @@ class Function(Node):
         name: str,
         return_type: Optional[str] = None,
         docstring: Optional[str] = None,
+        attributes: Optional[dict] = None,
         children: Optional[List[Node]] = None,
     ):
+        attributes = attributes or {}
+        attributes.update({
+            "return_type": return_type,
+            "docstring": docstring,
+        })
         super().__init__(
             type=NodeType.FUNCTION,
             name=name,
-            attributes={
-                "return_type": return_type,
-                "docstring": docstring,
-            },
+            attributes=attributes,
             children=children or [],
         )

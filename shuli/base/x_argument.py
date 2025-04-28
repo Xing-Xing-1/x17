@@ -11,12 +11,15 @@ class Argument(Node):
         name: str,
         type_hint: Optional[str] = None,
         default: Optional[str] = None,
+        attributes: Optional[dict] = None,
     ):
+        attributes = attributes or {}
+        attributes.update({
+            "type_hint": type_hint,
+            "default": default,
+        })
         super().__init__(
             type=NodeType.ARGUMENT,
             name=name,
-            attributes={
-                "type_hint": type_hint,
-                "default": default,
-            },
+            attributes=attributes,
         )

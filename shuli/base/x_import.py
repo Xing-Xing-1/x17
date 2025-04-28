@@ -10,12 +10,15 @@ class Import(Node):
         self,
         source: str,
         alias: Optional[str] = None,
+        attributes: Optional[dict] = None,
     ):
+        attributes = attributes or {}
+        attributes.update({
+            "source": source,
+            "alias": alias,
+        })
         super().__init__(
             type=NodeType.IMPORT,
             name=source,
-            attributes={
-                "source": source,
-                "alias": alias,
-            },
+            attributes = attributes,
         )
