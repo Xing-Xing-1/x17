@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "shuli"
+version = "0.1.0"
+description = "A structure-aware Python documentation engine for Python projects that understands code structure—whether it follows Object-Oriented Programming or not. It analyzes source files and extracts meaningful descriptions of classes, functions, methods, and modules."
+authors = ["Xing Xing <xing@example.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/Xing-Xing-1/shuli"
+repository = "https://github.com/Xing-Xing-1/shuli"
+keywords = ["documentation", "python", "parser", "markdown", "sphinx", "docgen"]
+packages = [{ include = "shuli" }]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+astroid = "^3.1.0"              # For richer AST analysis
+markdownify = "^0.11.6"         # Optional: Markdown rendering helpers
+docutils = "^0.20"              # For Sphinx-style output
+jinja2 = "^3.1.3"               # Template support for all exporters
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.1.1"
+black = "^24.3.0"
+mypy = "^1.9.0"
+isort = "^5.13.2"
+flake8 = "^7.0.0"
+types-docutils = "^0.20.0.20240106"
+
+[tool.poetry.scripts]
+shuli = "shuli.__main__:main"  # Optional: For CLI entry point, if __main__.py exists
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
