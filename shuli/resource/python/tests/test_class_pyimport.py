@@ -2,15 +2,15 @@
 
 import ast
 import pytest
-
 from shuli.resource.python.pyimport import PyImport
 
-def test_pyimport_manual_initialization():
+
+def test_pyimport_manual_initialization_full():
     imp = PyImport(
         name="os",
         module=None,
         alias=None,
-        level=None,
+        level=0,
         start_line=1,
         end_line=1,
         start_column=0,
@@ -20,11 +20,14 @@ def test_pyimport_manual_initialization():
     assert imp.alias is None
     assert imp.name == "os"
     assert imp.module is None
+    assert imp.level == 0
     assert imp.start_line == 1
+    assert imp.end_column == 10
     assert imp.attributes["name"] == "os"
-    assert imp.attributes["start_line"] == 1
+    assert imp.attributes["level"] == 0
     assert imp.dict["type"] == "import"
     assert imp.dict["name"] == "os"
+
 
 def test_pyimport_from_ast_import():
     code = "import os"
@@ -32,9 +35,12 @@ def test_pyimport_from_ast_import():
     imports = PyImport.from_ast(node)
     assert len(imports) == 1
     imp = imports[0]
+    assert isinstance(imp, PyImport)
     assert imp.source == "os"
-    assert imp.alias is None
+    assert imp.name == "os"
     assert imp.module is None
+    assert imp.alias is None
+
 
 def test_pyimport_from_ast_from_import_single():
     code = "from typing import List"
@@ -43,8 +49,10 @@ def test_pyimport_from_ast_from_import_single():
     assert len(imports) == 1
     imp = imports[0]
     assert imp.source == "typing.List"
-    assert imp.module == "typing"
     assert imp.name == "List"
+    assert imp.module == "typing"
+    assert imp.alias is None
+
 
 def test_pyimport_from_ast_from_import_multiple():
     code = "from typing import List, Dict"
@@ -55,29 +63,32 @@ def test_pyimport_from_ast_from_import_multiple():
     assert "typing.List" in sources
     assert "typing.Dict" in sources
 
+
 def test_pyimport_dict_export():
     imp = PyImport(
-        name="os",
-        module=None,
-        alias=None,
+        name="json",
+        module="python",
+        alias="j",
     )
-    exported = imp.dict
-    assert exported["type"] == "import"
-    assert exported["name"] == "os"
+    d = imp.dict
+    assert d["type"] == "import"
+    assert d["name"] == "json"
+    assert d["attributes"]["alias"] == "j"
+    assert d["attributes"]["module"] == "python"
 
-def test_pyimport_repr():
+
+def test_pyimport_repr_format():
     imp = PyImport(
-        name="os",
+        name="math",
         module=None,
         alias=None,
     )
-    output = repr(imp)
-    assert "PyImport" in output
-    assert "name=os" in output
+    out = repr(imp)
+    assert out.startswith("PyImport(")
+    assert "name=math" in out
 
-def test_pyimport_from_ast_invalid_node():
-    code = "print('hello')"
-    node = ast.parse(code).body[0]
+
+def test_pyimport_from_ast_invalid_node_returns_empty():
+    node = ast.parse("x = 5").body[0]
     result = PyImport.from_ast(node)
-    assert result == []
-    
+    assert result == []  # Graceful fallback

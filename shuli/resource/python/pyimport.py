@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from typing import List, Optional, Dict, Any
 import ast
-import asttokens
 
 from shuli.base.x_import import Import
-from shuli.base.x_node import NodeType
 
 class PyImport(Import):
     """
@@ -19,7 +17,7 @@ class PyImport(Import):
     def from_ast(
         cls, 
         node: ast.ImportFrom | ast.Import,
-    ) -> Optional[List["PyImport"]]:
+    ) -> List["PyImport"]:
         imports = []
         names = getattr(node, "names", [])
         for name in names:
@@ -33,11 +31,11 @@ class PyImport(Import):
                     end_line = getattr(node, "end_lineno", None),
                     start_column = getattr(node, "col_offset", None),
                     end_column = getattr(node, "end_col_offset", None),
+                    astnode = node,
                 )
             )
         return imports
     
-
     def __init__(
         self,
         name: str,
@@ -48,9 +46,11 @@ class PyImport(Import):
         end_line: Optional[int] = None,
         start_column: Optional[int] = None,
         end_column: Optional[int] = None,
+        astnode: Optional[ast.AST] = None,
     ):
+        source = f"{module}.{name}" if module else name
         super().__init__(
-            source=f"{module}.{name}" if module else name,
+            source=source.strip("."),
             alias=alias,
             attributes={
                 "name": name,
@@ -70,5 +70,6 @@ class PyImport(Import):
         self.end_line = end_line
         self.start_column = start_column
         self.end_column = end_column
+        self.astnode = astnode
         
         
