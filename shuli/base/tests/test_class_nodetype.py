@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from shuli.base.x_nodetype import NodeType
+from shuli.base.nodetype import NodeType
 
 
 def test_nodetype_enum_values():

@@ -2,74 +2,70 @@
 from typing import List, Optional, Dict, Any
 import ast
 
-from shuli.base.x_import import Import
+from shuli.resource.python.pynode import PyNode
+from shuli.base.nodetype import NodeType
 
-class PyImport(Import):
+class PyImport(PyNode):
     """
-    A Python-specific Import Node.
+    A Python-specific Import Node. 
     Extends the generic Import particle,
     adding parsing capability from AST, 
     and collects detailed information.
     
     """
-    
     @classmethod
     def from_ast(
         cls, 
-        node: ast.ImportFrom | ast.Import,
+        astnode: ast.ImportFrom | ast.Import,
+        name: Optional[str] = None,
     ) -> List["PyImport"]:
         imports = []
-        names = getattr(node, "names", [])
-        for name in names:
+        module = getattr(astnode, "module", None)
+        level = getattr(astnode, "level", None)
+        start_line = getattr(astnode, "lineno", None)
+        end_line = getattr(astnode, "end_lineno", None)
+        start_col = getattr(astnode, "col_offset", None)
+        end_col = getattr(astnode, "end_col_offset", None)
+        
+        for subnode in getattr(astnode, "names", []):
+            subname = getattr(subnode, "name", name)
+            alias = getattr(subnode, "asname", None)
+            if isinstance(astnode, ast.ImportFrom):
+                source = f"{module}.{subname}" if module else subname
+            else:
+                source = subname
+            
             imports.append(
                 PyImport(
-                    name = name.name,
-                    module = getattr(node, "module", None),
-                    alias = name.asname,
-                    level = getattr(node, "level", None),
-                    start_line = getattr(node, "lineno", None),
-                    end_line = getattr(node, "end_lineno", None),
-                    start_column = getattr(node, "col_offset", None),
-                    end_column = getattr(node, "end_col_offset", None),
-                    astnode = node,
+                    astnode = subnode,
+                    name = subname or getattr(astnode, "name", None) or name,
+                    attributes={
+                        "asttype": astnode.__class__.__name__,
+                        "alias": alias,
+                        "module": module,
+                        "level": level,
+                        "source": source,
+                        "start_line": start_line,
+                        "end_line": end_line,
+                        "start_col": start_col,
+                        "end_col": end_col,
+                    },
                 )
             )
         return imports
     
     def __init__(
         self,
-        name: str,
-        module: Optional[str] = None,
-        alias: Optional[str] = None,
-        level: Optional[int] = None,
-        start_line: Optional[int] = None,
-        end_line: Optional[int] = None,
-        start_column: Optional[int] = None,
-        end_column: Optional[int] = None,
-        astnode: Optional[ast.AST] = None,
+        astnode: ast.ImportFrom | ast.Import,
+        name: Optional[str] = None,
+        attributes: Optional[Dict[str, Any]] = {},
     ):
-        source = f"{module}.{name}" if module else name
         super().__init__(
-            source=source.strip("."),
-            alias=alias,
-            attributes={
-                "name": name,
-                "module": module,
-                "level": level,
-                "start_line": start_line,
-                "end_line": end_line,
-                "start_column": start_column,
-                "end_column": end_column,
-            }
+            astnode=astnode,
+            type=NodeType.IMPORT,
+            name=name,
+            attributes=attributes,
         )
-        self.name = name
-        self.module = module
-        self.alias = alias
-        self.level = level
-        self.start_line = start_line
-        self.end_line = end_line
-        self.start_column = start_column
-        self.end_column = end_column
         self.astnode = astnode
-        
-        
+    
+    

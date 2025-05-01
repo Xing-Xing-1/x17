@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from shuli.base.x_nodetype import NodeType
+from shuli.base.nodetype import NodeType
 
 
 class Node:
@@ -14,60 +13,50 @@ class Node:
     Node can loop through its children and export itself as a dictionary.
 
     """
-
     def __init__(
         self,
-        type: NodeType,
+        type: NodeType = NodeType.UNKNOWN,
         name: Optional[str] = None,
         attributes: Optional[Dict[str, Any]] = None,
         children: Optional[List["Node"]] = None,
     ):
         self.type = type
         self.name = name
-        self.children = []
         self.attributes = attributes or {}
         for key, value in self.attributes.items():
             setattr(self, key, value)
 
-        if self.is_composite:
-            self.children = children or []
-        elif children:
-            raise ValueError(f"Node of type '{self.type.value}' cannot have children.")
+        self.children = []
+        self.parent = None
+        for child in children or []:
+            self.add_child(child)
 
     # --- Properties ---
 
     @property
     def is_composite(self) -> bool:
-        return self.type in {
-            NodeType.MODULE,
-            NodeType.CLASS,
-            NodeType.FUNCTION,
-        }
+        return True if self.children else False
 
     @property
     def is_leaf(self) -> bool:
         return not self.is_composite
 
     # --- Methods ---
-
-    def add_child(
-        self,
-        child: "Node",
-    ) -> None:
-        if not self.is_composite:
-            raise TypeError(f"Cannot add child to Leaf Node '{self.type.value}'")
+    
+    def add_child(self, child: "Node") -> None:
+        child.add_parent(self)
         self.children.append(child)
+
+    def add_parent(self, parent: "Node") -> None:
+        self.parent = parent
 
     @property
     def dict(self) -> Dict[str, Any]:
-        result = {
+        return {
             "type": self.type.value,
             "name": self.name,
             "attributes": self.attributes,
         }
-        if self.is_composite:
-            result["children"] = [child.dict for child in self.children]
-        return result
 
     def __repr__(self) -> str:
         attributes = []
@@ -77,3 +66,4 @@ class Node:
             if value:
                 attributes.append(f"{key}={value}")
         return f"{self.__class__.__name__}({', '.join(attributes)})"
+

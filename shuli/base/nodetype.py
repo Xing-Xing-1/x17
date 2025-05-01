@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 
 
 class NodeType(Enum):
+    # Common
     MODULE = "module"
     CLASS = "class"
     FUNCTION = "function"
@@ -11,4 +12,7 @@ class NodeType(Enum):
     COMMENT = "comment"
     CODEBLOCK = "codeblock"
     ARGUMENT = "argument"
-    OTHERS = "others"
+    
+    # Safenet
+    OTHERS = "others" # Other types not specified or not supported
+    UNKNOWN = "unknown" # Unknown type, used for error handling or unrecognized nodes
