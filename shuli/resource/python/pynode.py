@@ -70,3 +70,18 @@ class PyNode(Node):
             ]
         return result
     
+    @staticmethod
+    def unparse(
+        node: Optional[ast.AST], 
+        fallback: Optional[List[str]] = ['id', 'name', 'value'],
+    ) -> Optional[str]:
+        if node is None:
+            return None
+        try:
+            return ast.unparse(node)
+        except Exception:
+            for attr in fallback or []:
+                value = getattr(node, attr, None)
+                if value is not None:
+                    return str(value)
+            return None
