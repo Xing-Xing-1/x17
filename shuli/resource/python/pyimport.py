@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 import ast
 
 from shuli.resource.python.pynode import PyNode
@@ -18,6 +18,8 @@ class PyImport(PyNode):
         cls, 
         astnode: ast.ImportFrom | ast.Import,
         name: Optional[str] = None,
+        source_lines: Optional[List[str]] = None,
+        **kwargs,
     ) -> List["PyImport"]:
         imports = []
         module = getattr(astnode, "module", None)
@@ -26,18 +28,17 @@ class PyImport(PyNode):
         end_line = getattr(astnode, "end_lineno", None)
         start_col = getattr(astnode, "col_offset", None)
         end_col = getattr(astnode, "end_col_offset", None)
+        if source_lines and start_line and end_line:
+            source = cls.get_snippet_from(source_lines, start_line, end_line)
+        else:
+            source = ''
         
         for subnode in getattr(astnode, "names", []):
             subname = getattr(subnode, "name", name)
             alias = getattr(subnode, "asname", None)
-            if isinstance(astnode, ast.ImportFrom):
-                source = f"{module}.{subname}" if module else subname
-            else:
-                source = subname
-            
             imports.append(
                 PyImport(
-                    astnode = subnode,
+                    astnode = astnode,
                     name = subname or getattr(astnode, "name", None) or name,
                     attributes={
                         "asttype": astnode.__class__.__name__,
