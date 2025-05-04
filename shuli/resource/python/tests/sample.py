@@ -10,9 +10,9 @@ CONSTANT = 42
 
 class BaseClass:
     """This is a base class."""
-    def base_method(self, value: int) -> int:
+    def base_method(self, value: int) -> (int, str):
         """Base method"""
-        return value
+        return value, "result"
 
 class ChildClass(BaseClass):
     """This is a child class inheriting BaseClass."""
@@ -28,6 +28,7 @@ class ChildClass(BaseClass):
         """Child method"""
         return param
 
+@staticmethod
 def standalone_function(x: int, y: int = 10) -> int:
     """A standalone function outside classes."""
     return x + y
@@ -76,6 +77,7 @@ def outer(u: int, v=3, *args, **kwargs):
         case _: print("other")
 
     print("done")
+    return u
 
 class Sample(Base):
     class_attr: str = "Hello"

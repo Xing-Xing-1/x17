@@ -10,6 +10,5 @@ def test_nodetype_enum_values():
     assert NodeType.FUNCTION.value == "function"
     assert NodeType.IMPORT.value == "import"
     assert NodeType.COMMENT.value == "comment"
-    assert NodeType.CODEBLOCK.value == "codeblock"
     assert NodeType.ARGUMENT.value == "argument"
     assert NodeType.OTHERS.value == "others"

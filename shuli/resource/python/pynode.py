@@ -317,4 +317,43 @@ class PyNode(Node):
     ) -> bool:
         return self.in_ranges(line, self.list_subnode_ranges())
     
+    def get_children(
+        self,
+        nodetype: Optional[Union[NodeType, List[NodeType]]] = None,
+        asttype: Optional[Union[Type[ast.AST], List[Type[ast.AST]]]] = None,
+    ) -> List["PyNode"]:
+        results = self.children or []
+        if nodetype is not None:
+            nodetypes = [nodetype] if isinstance(nodetype, NodeType) else nodetype
+            results = [child for child in results if child.type in nodetypes]
+
+        if asttype is not None:
+            asttypes = [asttype] if isinstance(asttype, type) else asttype
+            results = [
+                child for child in results
+                if isinstance(child.astnode, tuple(asttypes))
+            ]
+        return results
+    
+    def get_arguments(self) -> List["PyNode"]:
+        return self.get_children(nodetype=NodeType.ARGUMENT)
+    
+    def get_statements(self) -> List["PyNode"]:
+        return self.get_children(nodetype=NodeType.STATEMENT)
+    
+    def get_returns(self) -> List["PyNode"]:
+        return self.get_children(asttype=ast.Return)
+    
+    def get_imports(self) -> List["PyNode"]:
+        return self.get_children(nodetype=NodeType.IMPORT)
+    
+    def get_functions(self) -> List["PyNode"]:
+        return self.get_children(nodetype=NodeType.FUNCTION)
+    
+    def get_classes(self) -> List["PyNode"]:
+        return self.get_children(nodetype=NodeType.CLASS)
+    
+    def get_comments(self) -> List["PyNode"]:
+        return self.get_children(nodetype=NodeType.COMMENT)
+    
     

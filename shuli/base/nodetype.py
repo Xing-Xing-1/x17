@@ -10,8 +10,9 @@ class NodeType(Enum):
     FUNCTION = "function"
     IMPORT = "import"
     COMMENT = "comment"
-    CODEBLOCK = "codeblock"
+    STATEMENT = "statement"
     ARGUMENT = "argument"
+    
     
     # Safenet
     OTHERS = "others" # Other types not specified or not supported
