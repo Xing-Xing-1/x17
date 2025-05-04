@@ -1,5 +1,5 @@
 from .pynode import PyNode
-from .python import Python
+from .pymodule import PyModule
 from .pyfunction import PyFunction
 from .pyargument import PyArgument
 from .pycomment import PyComment
@@ -8,7 +8,7 @@ from .pyimport import PyImport
 from .pyclass import PyClass
 
 __all__ = [
-    "Python",
+    "PyModule",
     "PyNode",
     "PyFunction",
     "PyArgument",

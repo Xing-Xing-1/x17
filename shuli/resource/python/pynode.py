@@ -90,11 +90,28 @@ class PyNode(Node):
         end_col = getattr(self.astnode, "end_col_offset", None)
         return start_line, start_col, end_line, end_col
 
-    def export(self) -> Dict[str, Any]:
-        result = self.dict.copy()
-        if self.children:
-            result["children"] = [child.export() for child in self.children]
-        return result
+    def export(
+        self,
+        recursive: bool = True,
+        exclude_attributes: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        exclude_attributes = exclude_attributes or []
+        data = {
+            "type": self.type.value,
+            "name": self.name,
+            "attributes": {
+                k: v for k, v in self.attributes.items()
+                if k not in exclude_attributes
+            },
+        }
+        if recursive and self.children:
+            data["children"] = [
+                child.export(
+                    recursive=recursive,
+                    exclude_attributes=exclude_attributes,
+                ) for child in self.children
+            ]
+        return data
 
     @staticmethod
     def unparse_from(
