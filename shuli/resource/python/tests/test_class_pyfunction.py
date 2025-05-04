@@ -88,9 +88,8 @@ def f():
 '''
     lines = textwrap.dedent(code).strip().splitlines()
     func = PyFunction.from_ast(ast.parse("\n".join(lines)).body[0], source_lines=lines)[0]
-    # ClassDef should not be parsed (your code marks it TODO)
     classes = func.get_children(asttype=ast.ClassDef)
-    assert len(classes) == 0
+    assert len(classes) == 1
     
 def test_multiple_decorators():
     code = '''

@@ -64,8 +64,10 @@ class PyFunction(PyNode):
                     PyFunction.from_ast(stmt, source_lines=source_lines)
                 )
             elif isinstance(stmt, ast.ClassDef):
-                # TODO: Implement PyClass.from_ast when ready
-                pass     
+                from shuli.resource.python.pyclass import PyClass
+                children.extend(
+                    PyClass.from_ast(stmt, source_lines=source_lines)
+                ) 
             else:
                 children.extend(
                     PyStatement.from_ast(stmt, source_lines=source_lines)
