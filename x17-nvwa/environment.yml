@@ -1,0 +1,13 @@
+name: x17-nvwa-env
+channels:
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - pip
+  - setuptools
+  - wheel
+
+  - pip:
+      - -r requirements.dev.txt
