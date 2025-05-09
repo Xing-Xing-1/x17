@@ -5,7 +5,7 @@ SHELL = /bin/zsh
 SCRIPT_DIR = .shell
 .PHONY: clear-cache clear-pytest-cache clear-python-cache
 
-# ENV CREATION
+
 init-env:
 	sh $(SCRIPT_DIR)/init-conda-env.sh
 

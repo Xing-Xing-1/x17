@@ -8,14 +8,11 @@ from typing import Any, Dict, Optional
 from pangu.particle.terminal.command import Command
 from pangu.particle.terminal.response import Response
 from pangu.particle.datestamp import Datestamp
-from pangu.particle.duration import Duration
 
 
 class Terminal:
     """
     A cross-platform virtual Terminal.
-    Responsible for executing commands within its own environment context.
-    
     """
 
     def __init__(
@@ -26,7 +23,6 @@ class Terminal:
     ):
         self.cwd = cwd
         self.env = env
-        self.os_name = os.name
         self.encoding = encoding
         self.history = []
 
@@ -43,16 +39,38 @@ class Terminal:
         return sys.platform.startswith("linux")
 
     def run(self, cmd: Command) -> Response:
+        """
+        Run a command using the instance's cwd/env/encoding.
+        """
+        response = Terminal.run_from(
+            cmd=cmd,
+            cwd=cmd.cwd or self.cwd or os.getcwd(),
+            env=cmd.env or self.env or os.environ.copy(),
+            encoding=cmd.encoding or self.encoding,
+        )
+        self.record(cmd, response)
+        return response
+
+    @staticmethod
+    def run_from(
+        cmd: Command,
+        cwd: Optional[str] = None,
+        env: Optional[Dict[str, str]] = None,
+        encoding: str = "utf-8",
+    ) -> Response:
+        """
+        Stateless command execution, used as the primary logic.
+        """
         start = Datestamp.now()
         params = cmd.params.copy()
-        params["cwd"] = cmd.cwd or self.cwd or os.getcwd()
-        params["env"] = cmd.env or self.env or os.environ.copy()
-        params["encoding"] = cmd.encoding or self.encoding
+        params["cwd"] = cwd or os.getcwd()
+        params["env"] = env or os.environ.copy()
+        params["encoding"] = encoding
 
         try:
             result = subprocess.run(**params)
             end = Datestamp.now()
-            response = Response.from_object(
+            return Response.from_object(
                 obj=result,
                 started=start,
                 ended=end,
@@ -60,9 +78,9 @@ class Terminal:
                 env=params["env"],
                 captured=True,
             )
-        except subprocess.TimeoutExpired as e:
+        except subprocess.TimeoutExpired:
             end = Datestamp.now()
-            response = Response(
+            return Response(
                 code=-1,
                 stdout="",
                 stderr=f"Timeout after {params.get('timeout')} seconds",
@@ -76,7 +94,7 @@ class Terminal:
             )
         except Exception as e:
             end = Datestamp.now()
-            response = Response(
+            return Response(
                 code=-1,
                 stdout="",
                 stderr=str(e),
@@ -88,12 +106,26 @@ class Terminal:
                 captured=True,
                 signal=None,
             )
-        
-        self.record(cmd, response)
-        return response
 
     def record(self, cmd: Command, response: Response) -> None:
         self.history.append({
             "command": cmd.dict,
             "response": response.dict,
         })
+        
+    def exist(
+        self,
+        program: str = None,
+    ) -> bool:
+        if (program):
+            return Terminal.exist_from(program=program)
+
+    @staticmethod
+    def exist_from(
+        program: str = None,
+    ) -> bool:
+        if (program):
+            cmd = Command(cmd=f"which {program}")
+            result = Terminal.run_from(cmd)
+            return result.clean_success
+        

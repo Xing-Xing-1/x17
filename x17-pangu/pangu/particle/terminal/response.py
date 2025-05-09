@@ -73,8 +73,8 @@ class Response:
         signal: Optional[int] = None,
     ):
         self.code = code
-        self.stdout = stdout
-        self.stderr = stderr
+        self.stdout = stdout.strip()
+        self.stderr = stderr.strip()
         self.started = started
         self.ended = ended
         self.cwd = cwd
@@ -87,6 +87,10 @@ class Response:
     @property
     def success(self) -> bool:
         return self.code == 0
+
+    @property
+    def clean_success(self) -> bool:
+        return self.code == 0 and bool(self.stdout) and not self.stderr and not self.timeout
 
     @property
     def failed(self) -> bool:
@@ -126,4 +130,5 @@ class Response:
 
     def export(self) -> Dict[str, Any]:
         return dict(self.dict)
+    
     

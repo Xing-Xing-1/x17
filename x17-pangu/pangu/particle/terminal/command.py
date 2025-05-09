@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+
 from typing import Any, Dict, Optional, List
-import subprocess
 import shlex
 import os
 
