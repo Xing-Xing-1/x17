@@ -1,7 +1,7 @@
 [project]
 name = "x17-wenchang"
 version = "0.1.0"
-description = "A semantic AST-based documentation engine for Python, inspired by 文昌"
+description = "A semantic AST-based documentation engine for python"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
@@ -20,3 +20,6 @@ Documentation = "https://pypi.org/project/x17-wenchang/"
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["wenchang"]
