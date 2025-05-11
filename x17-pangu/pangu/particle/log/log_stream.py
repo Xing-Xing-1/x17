@@ -1,10 +1,11 @@
 from __future__ import annotations
 import logging
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from typing import TYPE_CHECKING
 
 from pangu.particle.text.id import Id
 from pangu.particle.log.log_event import LogEvent
+
 if TYPE_CHECKING:
     from pangu.particle.log.log_group import LogGroup
 
@@ -59,8 +60,26 @@ class LogStream:
             log_node.addHandler(handler)
         return log_node
 
-    def log(self, message: str, level: str = "INFO"):
-        event = LogEvent(level=level, message=message)
+    def log(
+        self, 
+        message: str,
+        level: str = "INFO",
+        context: Optional[str] = None,
+        code: Optional[int] = None,
+        tags: Optional[List[str]] = None,
+        metrics: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
+        event = LogEvent(
+            level=level, 
+            message=message,
+            name=self.name,
+            context=context,
+            code=code,
+            tags=tags,
+            metrics=metrics,
+            **kwargs,
+        )
         if self.group:
             self.group.receive(self.name, event)
         
@@ -71,7 +90,9 @@ class LogStream:
             )
 
     def info(self, message: str):
-        self.log(message, "INFO")
+        self.log(
+            message, 
+            "INFO")
 
     def warn(self, message: str):
         self.log(message, "WARNING")

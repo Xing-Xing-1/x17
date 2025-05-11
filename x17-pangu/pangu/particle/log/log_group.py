@@ -1,6 +1,7 @@
 import queue
 import threading
 from typing import Dict, List, Optional, Any
+
 from pangu.particle.log.log_event import LogEvent
 from pangu.particle.log.log_stream import LogStream
 from pangu.particle.log.log_core import LogCore
@@ -14,11 +15,14 @@ class LogGroup:
         self,
         name: Optional[str] = "",
         core: Optional[LogCore] = None,
+        sync_mode: Optional[bool] = False,
+        **kwargs: Any,
     ):
         self.id = Id.uuid(8)
         self.base_name = name
         self.name = name or f"{self.__class__.__name__}:{self.id}"
         self.core = core
+        self.sync_mode = sync_mode
         if self.core:
             self.core.register_group(self)
         self.streams: Dict[str, List[LogEvent]] = {}
@@ -54,8 +58,18 @@ class LogGroup:
         self.streams[stream.name] = []
         return stream
 
-    def receive(self, stream_name: str, event: LogEvent):
-        self.queue.put((stream_name, event))
+    def receive(
+        self, 
+        stream_name: str, 
+        event: LogEvent,
+    ):
+        if self.sync_mode:
+            with self._lock:
+                self.streams.setdefault(stream_name, []).append(event)
+            if self.core:
+                self.core.push(self.name, stream_name, event)
+        else:
+            self.queue.put((stream_name, event))
 
     def _consume(self):
         while True:

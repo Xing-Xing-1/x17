@@ -6,12 +6,10 @@ from pangu.particle.text.id import Id
 
 
 class LogEvent:
-
-    def from_dict(self, data: Dict[str, Any]) -> LogEvent:
-        """
-        Create a LogEvent instance from a dictionary.
-
-        """
+    def from_dict(
+        self, 
+        data: Dict[str, Any],
+    ) -> LogEvent:
         return LogEvent(
             message=data.get("message", ""),
             level=data.get("level", "INFO"),
@@ -24,6 +22,11 @@ class LogEvent:
         name: Optional[str] = "",
         level: str = "INFO",
         datestamp: Optional[str] = None,
+        context: Optional[str] = None,
+        code: Optional[int] = None,
+        tags: Optional[List[Dict[str, str]]] = None,
+        metrics: Optional[Dict[str, Any]] = None,
+        extra: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ):
         self.id = Id.uuid(5)
@@ -32,6 +35,11 @@ class LogEvent:
         self.datestamp = datestamp or Datestamp.now().datestamp_str
         self.level = level.upper()
         self.message = message
+        self.context = context
+        self.code = code
+        self.tags = tags or []
+        self.metrics = metrics or {}
+        self.extra = extra or {}
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -39,7 +47,8 @@ class LogEvent:
         attr_parts = []
         for key in self.attr:
             value = getattr(self, key, None)
-            attr_parts.append(f"{key}={repr(value)}")
+            if value:
+                attr_parts.append(f"{key}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attr_parts)})"
 
     def __str__(self):
