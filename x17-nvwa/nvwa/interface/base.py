@@ -1,30 +1,68 @@
 # -*- coding: utf-8 -*-
+from typing import Any, Dict, Optional, List
 
-from abc import ABC, abstractmethod
-from typing import Any
+from nvwa.handler.base import BaseHandler
 
-class BaseInterface(ABC):
+from pangu.particle.log import LogStream
+from pangu.particle.log import LogGroup
+
+class BaseInterface():
     """
     Abstract base interface for all LLM wrappers.
     Provides the minimal API for stateless inference.
     
     """
+    def __init__(
+        self, 
+        name: str,
+        log_group: Optional[LogGroup] = None,
+        handler: Optional[BaseHandler] = None,
+    ):
+        self.name = name or f"{self.__class__.__name__}"
+        self.models = {}
+        self.log_group = log_group or LogGroup(
+            name=f"{self.name}LogGroup",
+        )
+        self.log_stream = LogStream(
+            name=f"{self.name}LogStream", 
+            group=self.log_group,
+        )
+        if self.log_stream not in self.log_group.streams:
+            self.log_group.register_stream(self.log_stream)
+            
+        self.handler = handler or BaseHandler(
+            interface=self, 
+            name=f"{self.name}Handler",
+        )
+        self.log_group.register_stream(self.handler.log_stream)
 
-    def __init__(self, model_name: str):
-        self.model_name = model_name
+    def set_handler(self, handler: BaseHandler) -> None:
+        """
+        Set the handler for the interface.
+        """
+        self.handler = handler
+        self.log_group.register_stream(handler.log_stream)
 
-    @abstractmethod
-    def infer(self, prompt: str, **kwargs) -> str:
+    def log(
+        self, 
+        message: str, 
+        level: str = "info",
+        context: Optional[str] = None,
+        code: Optional[int] = None,
+        tags: Optional[List[str]] = None,
+        metrics: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> None:
         """
-        Perform stateless inference on a given prompt.
-
+        Log a message to the log stream.
+        Using predefined log mechanism to distribute log messages.
         """
-        pass
-
-    @abstractmethod
-    def check_env(self) -> bool:
-        """
-        Check if the environment is set up correctly for the model.
-        This can include checking for required files, directories, or configurations.
-        """
-        pass
+        self.log_stream.log(
+            message=message,
+            level=level,
+            context=context,
+            code=code,
+            tags=tags,
+            metrics=metrics,
+            **kwargs,
+        )
