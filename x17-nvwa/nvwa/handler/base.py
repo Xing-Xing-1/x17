@@ -2,6 +2,7 @@
 from typing import Dict, Any, Optional, List
 
 from pangu.particle.log import LogStream
+from pangu.particle.text import Id
 
 
 class BaseHandler():
@@ -11,7 +12,7 @@ class BaseHandler():
         interface: Any = None,
         log_stream: Optional[LogStream] = None,
     ):
-        self.name = name or f"{self.__class__.__name__}"
+        self.name = name or f"{self.__class__.__name__}{Id.uuid(length=4)}"
         self.interface = interface
         self.log_stream = log_stream or LogStream(
             name=f"{self.name}LogStream", 

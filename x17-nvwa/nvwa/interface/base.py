@@ -2,6 +2,7 @@
 from typing import Any, Dict, Optional, List
 
 from nvwa.handler.base import BaseHandler
+from nvwa.model.base import BaseModel
 
 from pangu.particle.log import LogStream
 from pangu.particle.log import LogGroup
@@ -42,6 +43,24 @@ class BaseInterface():
         """
         self.handler = handler
         self.log_group.register_stream(handler.log_stream)
+    
+    def add_model(
+        self, 
+        model: BaseModel,
+    ) -> None:
+        """
+        Add a model to the interface.
+        """
+        model.interface = self
+        if hasattr(model, "log_stream") and model.log_stream and self.log_group:
+            self.log_group.register_stream(model.log_stream)
+        
+        self.models[model.name] = model
+        self.log_stream.register_stream(model.log_stream)
+        self.log(
+            message=f"Model {model.name} added to interface {self.name}",
+            context="add_model",
+        )
 
     def log(
         self, 
@@ -66,3 +85,5 @@ class BaseInterface():
             metrics=metrics,
             **kwargs,
         )
+        
+        
