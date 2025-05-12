@@ -31,7 +31,7 @@ class Call:
 
     def __init__(
         self,
-        method: str,
+        method: str, # HTTP method (GET, POST, etc.)
         url: Union[str, Url],
         headers: Optional[Dict[str, str]] = None,
         query: Optional[Dict[str, Any]] = None,

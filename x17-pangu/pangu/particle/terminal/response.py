@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import subprocess
 from typing import Any, Dict, Optional
 
 from pangu.particle.datestamp import Datestamp
@@ -34,6 +34,9 @@ class Response:
             cmdline=data.get("cmdline"),
             captured=data.get("captured", True),
             signal=data.get("signal"),
+            sync=data.get("sync", False),
+            process=data.get("process"),
+            pid=data.get("pid"),
         )
         
     @classmethod
@@ -71,6 +74,9 @@ class Response:
         cmdline: Optional[str] = None,
         captured: bool = True,
         signal: Optional[int] = None,
+        sync: Optional[bool] = False,
+        process: Optional[subprocess.Popen] = None,
+        pid: Optional[int] = None,
     ):
         self.code = code
         self.stdout = stdout.strip()
@@ -83,6 +89,9 @@ class Response:
         self.captured = captured
         self.signal = signal
         self.duration = ended - started
+        self.sync = sync
+        self.process = process
+        self.pid = pid
 
     @property
     def success(self) -> bool:
@@ -117,6 +126,8 @@ class Response:
             "cmdline": self.cmdline,
             "captured": self.captured,
             "signal": self.signal,
+            "sync": self.sync,
+            "pid": self.pid,
         }
         
     def __str__(self) -> str:

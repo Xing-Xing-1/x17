@@ -7,7 +7,7 @@ def test_command_init_default():
     cmd = Command(cmd="echo hello")
     assert cmd.cmd == "echo hello"
     assert cmd.cwd == os.getcwd()
-    assert isinstance(cmd.shell, bool)
+    assert isinstance(cmd.shell, bool) or cmd.shell is None
     assert isinstance(cmd.timeout, Duration)
     assert cmd.encoding == "utf-8"
     assert cmd.text is True
@@ -26,15 +26,15 @@ def test_command_repr_output():
     output = repr(cmd)
     assert output.startswith("Command(")
     assert "cmd=python script.py" in output
-    assert "cwd=" in output  # 确保有cwd
+    assert "cwd=" in output
 
 def test_command_dict_and_export():
     cmd = Command(cmd="make build", cwd="/tmp", encoding="utf-8", text=True, output=False)
     d = cmd.dict
     assert d["cmd"] == "make build"
     assert d["cwd"] == "/tmp"
-    assert d["env"] is None
-    assert isinstance(d["shell"], bool)
+    assert d["env"] == {}
+    assert isinstance(d["shell"], bool) or d["shell"] is None
     assert isinstance(d["timeout"], dict)
     assert d["encoding"] == "utf-8"
     assert d["text"] is True
@@ -79,10 +79,26 @@ def test_command_add_option_with_value():
 def test_command_params_mapping():
     cmd = Command(cmd="echo test", cwd="/testpath", shell=True, output=True)
     params = cmd.params
-    assert params["args"] == ['echo', 'test']
+    assert params["args"] == 'echo test'
     assert params["cwd"] == "/testpath"
     assert params["shell"] is True
     assert isinstance(params["timeout"], (int, float))
-    assert params["capture_output"] is True
     assert params["text"] is True
     assert params["encoding"] == "utf-8"
+
+def test_command_async_params_removes_timeout_and_check():
+    cmd = Command(
+        cmd="echo test", 
+        cwd="/tmp", 
+        shell=True, 
+        output=True, 
+        sync=False,
+    )
+    params = cmd.params
+    assert params["args"] == 'echo test'
+    assert params["cwd"] == "/tmp"
+    assert params["shell"] is True
+    assert "timeout" not in params
+    assert "check" not in params
+    assert params["stdout"] is not None
+    assert params["stderr"] is not None

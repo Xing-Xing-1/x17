@@ -1,9 +1,9 @@
 from typing import List
-from .path import BasePath
+from pangu.particle.platform.path import Path
 
 
-class BaseFolder:
-    def __init__(self, path: BasePath):
+class Folder:
+    def __init__(self, path: Path):
         self.path = path
 
     def list_files(self) -> List[str]:

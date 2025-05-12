@@ -1,5 +1,5 @@
 import unittest
-from pangu.particle.base.tag import BaseTag
+from pangu.particle.metadata.tag import BaseTag
 
 
 class TestBaseTag(unittest.TestCase):

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class BasePath(ABC):
+class Path(ABC):
     def __init__(self, raw: str):
         self.raw = raw
 

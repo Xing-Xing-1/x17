@@ -89,16 +89,80 @@ class LogStream:
                 message,
             )
 
-    def info(self, message: str):
+    def info(
+        self, 
+        message: str,
+        context: Optional[str] = None,
+        code: Optional[int] = None,
+        tags: Optional[List[str]] = None,
+        metrics: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
         self.log(
-            message, 
-            "INFO")
+            message=message,
+            level="INFO",
+            context=context,
+            code=code,
+            tags=tags,
+            metrics=metrics,
+            **kwargs,
+        )
 
-    def warn(self, message: str):
-        self.log(message, "WARNING")
+    def warn(
+        self, 
+        message: str,
+        context: Optional[str] = None,
+        code: Optional[int] = None,
+        tags: Optional[List[str]] = None,
+        metrics: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
+        self.log(
+            message=message,
+            level="WARNING",
+            context=context,
+            code=code,
+            tags=tags,
+            metrics=metrics,
+            **kwargs,
+        )
 
-    def error(self, message: str):
-        self.log(message, "ERROR")
+    def error(
+        self,
+        message: str,
+        context: Optional[str] = None,
+        code: Optional[int] = None,
+        tags: Optional[List[str]] = None,
+        metrics: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
+        self.log(
+            message=message,
+            level="ERROR",
+            context=context,
+            code=code,
+            tags=tags,
+            metrics=metrics,
+            **kwargs,
+        )
 
-    def debug(self, message: str):
-        self.log(message, "DEBUG")
+    def debug(
+        self,
+        message: str,
+        context: Optional[str] = None,
+        code: Optional[int] = None,
+        tags: Optional[List[str]] = None,
+        metrics: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
+        self.log(
+            message=message,
+            level="DEBUG",
+            context=context,
+            code=code,
+            tags=tags,
+            metrics=metrics,
+            **kwargs,
+        )
+    
+    

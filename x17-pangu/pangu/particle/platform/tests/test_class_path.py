@@ -1,8 +1,8 @@
 import unittest
-from pangu.particle.base.path import BasePath
+from pangu.particle.platform.path import Path
 
 
-class DummyPath(BasePath):
+class DummyPath(Path):
     def is_absolute(self) -> bool:
         return self.raw.startswith("/")
 

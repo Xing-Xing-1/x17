@@ -1,9 +1,9 @@
 import unittest
-from pangu.particle.base.file import BaseFile
-from pangu.particle.base.path import BasePath
+from pangu.particle.platform.file import File
+from pangu.particle.platform.path import Path
 
 
-class DummyPath(BasePath):
+class DummyPath(Path):
     def is_absolute(self):
         return True
 
@@ -14,7 +14,7 @@ class DummyPath(BasePath):
         return self.raw
 
 
-class DummyFile(BaseFile):
+class DummyFile(File):
     def __init__(self, path, content=None):
         super().__init__(path, content)
 

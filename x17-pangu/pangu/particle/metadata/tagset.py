@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from typing import Dict, Literal, Optional, Union, List
-from pangu.particle.base.tag import BaseTag
+from pangu.particle.metadata.tag import BaseTag
 
 
 class BaseTagSet:

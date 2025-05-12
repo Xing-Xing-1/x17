@@ -8,7 +8,6 @@ from pangu.particle.remote.url import Url
 class Response:
     """
     Represents an HTTP response.
-
     """
 
     @classmethod
@@ -114,3 +113,4 @@ class Response:
     ) -> Dict[str, Any]:
         return self.dict
 
+    

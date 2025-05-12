@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Literal
+import subprocess
 import shlex
 import os
 
@@ -14,7 +15,6 @@ class Command:
     and handle command execution parameters.
 
     """
-    
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Command":
         return cls(
@@ -27,6 +27,7 @@ class Command:
             encoding=data.get("encoding", "utf-8"),
             text=data.get("text", True),
             output=data.get("output", True),
+            sync=data.get("sync", True),
         )
     
     def __init__(
@@ -40,23 +41,21 @@ class Command:
         encoding: str = "utf-8",
         text: Optional[bool] = True,
         output: Optional[str] = True,
+        sync: Optional[bool] = True,
     ) -> None:
-        self.cmd = cmd
+        self.cmd = cmd if isinstance(cmd, str) else " ".join(cmd)
         self.cwd = cwd or os.getcwd()
-        self.env = env
+        self.env = env or {}
         self.check = check
-        self.shell = shell if shell is not None else os.name == "nt"
-        self.timeout = timeout or Duration(second=60)
+        self.shell = shell
+        self.timeout = timeout or Duration(minute=2)
         self.encoding = encoding
         self.text = text
         self.output = output
+        self.sync = sync
 
     @property
     def list(self) -> List[str]:
-        """
-        List of command line arguments
-        
-        """
         if isinstance(self.cmd, list):
             return self.cmd
         else:
@@ -74,24 +73,30 @@ class Command:
             "encoding": self.encoding,
             "text": self.text,
             "output": self.output,
+            "sync": self.sync,
         }
     
     @property
     def params(
         self,
     ) -> Dict[str, Any]:
-        params = {
-            "args": self.list,
+        base ={
+            "args": self.cmd if self.shell else self.list,
             "cwd": self.cwd,
             "env": self.env,
-            "shell": self.shell or False,
-            "timeout": self.timeout.base if self.timeout else None,
-            "check": self.check,
-            "capture_output": self.output,
+            "shell": self.shell,
             "text": self.text,
             "encoding": self.encoding,
         }
-        return {k: v for k, v in params.items() if v is not None}
+        if self.sync:
+            base.update({
+                "timeout": self.timeout.base if self.timeout else None,
+                "check": self.check,
+            })
+        if self.output:
+            base["stdout"] = subprocess.PIPE
+            base["stderr"] = subprocess.PIPE
+        return {k: v for k, v in base.items() if v is not None}
     
     def __str__(self) -> str:
         return " ".join(self.list)
@@ -104,10 +109,6 @@ class Command:
         return f"{self.__class__.__name__}({', '.join(attributes)})"
     
     def add_option(self, option: str, value: Optional[str] = None) -> None:
-        """
-        Add an option to the command, optionally with a value.
-        
-        """
         if value is not None:
             self.cmd += f" {option} {shlex.quote(value)}"
         else:

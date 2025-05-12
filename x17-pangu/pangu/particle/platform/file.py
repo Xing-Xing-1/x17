@@ -1,9 +1,9 @@
 from typing import Optional
-from .path import BasePath
+from pangu.particle.platform.path import Path
 
 
-class BaseFile:
-    def __init__(self, path: BasePath, content: Optional[str] = None):
+class File:
+    def __init__(self, path: Path, content: Optional[str] = None):
         self.path = path
         self.content = content
 

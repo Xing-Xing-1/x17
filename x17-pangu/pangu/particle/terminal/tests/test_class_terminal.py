@@ -11,7 +11,6 @@ def test_terminal_initialization_defaults():
     assert terminal.env is None
     assert terminal.encoding == "utf-8"
     assert isinstance(terminal.history, list)
-    assert terminal.os_name in ("posix", "nt")
 
 def test_terminal_initialization_custom_values():
     env = {"TEST_VAR": "123"}
@@ -55,14 +54,15 @@ def test_terminal_run_custom_env():
     env = {"CUSTOM_TEST_VAR": "MYVALUE"}
     terminal = Terminal(env=env)
     cmd = Command(
-        cmd=["python3", "-c", "import os; print(os.getenv('CUSTOM_TEST_VAR'))"],
-        shell=False
+        cmd=f'{sys.executable} -c "import os; print(os.getenv(\'CUSTOM_TEST_VAR\'))"',
+        shell=True,
+        env=env,
+        output=True,
     )
     response = terminal.run(cmd)
     print("RESPONSE STDOUT:", response.stdout)
     assert "MYVALUE" in response.stdout
     
-
 def test_terminal_run_custom_encoding():
     terminal = Terminal(encoding="utf-8")
     cmd = Command(cmd="echo test_encoding")
@@ -72,13 +72,13 @@ def test_terminal_run_custom_encoding():
 def test_terminal_run_with_timeout_handling():
     terminal = Terminal()
     if terminal.is_windows:
-        sleep_cmd = "timeout 5"  # Windows的sleep模拟
+        sleep_cmd = "timeout 5"
     else:
         sleep_cmd = "sleep 5"
     cmd = Command(cmd=sleep_cmd, timeout=Duration(second=1), check=False)
     response = terminal.run(cmd)
-    assert response.code == -1
-    assert "timeout" in response.stderr.lower()
+    assert response.code == 500
+    assert "timed out" in response.stderr.lower()
 
 def test_terminal_run_command_not_found():
     terminal = Terminal()
@@ -97,3 +97,25 @@ def test_terminal_history_recording():
     assert "response" in record
     assert record["command"]["cmd"] == "echo history_test"
     assert "history_test" in record["response"]["stdout"].lower()
+    
+def test_terminal_sync_run_echo():
+    cmd = Command(cmd="echo Hello World", shell=True, sync=True)
+    result = Terminal.run_from(cmd)
+    assert result.code == 0
+    assert "Hello World" in result.stdout
+
+
+def test_terminal_async_run_sleep():
+    cmd = Command(cmd="sleep 1", shell=True, sync=False)
+    result = Terminal.run_from(cmd, wait=Duration(second=2))
+    assert result.code == 0
+    assert result.pid is not None
+    assert result.process is not None
+
+
+def test_terminal_program_exists_true():
+    executable_name = os.path.basename(sys.executable)
+    assert Terminal.exist_from("git") is True
+
+def test_terminal_program_exists_false():
+    assert Terminal.exist_from("this_does_not_exist_123") is False

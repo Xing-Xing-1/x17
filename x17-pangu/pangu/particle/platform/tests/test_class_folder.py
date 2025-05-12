@@ -1,9 +1,9 @@
 import unittest
-from pangu.particle.base.folder import BaseFolder
-from pangu.particle.base.path import BasePath
+from pangu.particle.platform.folder import Folder
+from pangu.particle.platform.path import Path
 
 
-class DummyPath(BasePath):
+class DummyPath(Path):
     def is_absolute(self):
         return True
 
@@ -14,7 +14,7 @@ class DummyPath(BasePath):
         return self.raw
 
 
-class DummyFolder(BaseFolder):
+class DummyFolder(Folder):
     def list_files(self):
         return ["file1.txt", "file2.txt"]
 
@@ -25,7 +25,7 @@ class DummyFolder(BaseFolder):
         return True
 
 
-class TestBaseFolder(unittest.TestCase):
+class TestFolder(unittest.TestCase):
 
     def test_repr(self):
         f = DummyFolder(DummyPath("/dir"))
