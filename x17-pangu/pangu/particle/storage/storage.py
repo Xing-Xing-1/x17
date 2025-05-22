@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 from typing import Dict, Literal, Optional, Union
 
@@ -31,6 +30,13 @@ class Storage:
     def get_base(self) -> Union[int, float]:
         return self.size * STORAGE_UNIT_TABLE[self.unit] / STORAGE_UNIT_TABLE["b"]
 
+    @property
+    def attr(self) -> list[str]:
+        return [
+            key for key in self.__dict__.keys() 
+            if not key.startswith("_") and isinstance(self.__dict__[key], str)
+        ]
+    
     def __repr__(self) -> str:
         attributes = []
         for unit, value in self.dict.items():
@@ -39,7 +45,7 @@ class Storage:
         return f"{self.__class__.__name__}({', '.join(attributes)})"
 
     def __str__(self) -> str:
-        return self.__repr__()
+        return f"{self.size} {self.unit}"
 
     # --- operators ---
 
@@ -119,5 +125,7 @@ class Storage:
 
     def export(self) -> Dict[str, Union[any]]:
         return {
-            key: value for key, value in self.dict.items() if value not in (None, set())
+            key: value 
+            for key, value in self.dict.items() 
+            if value not in (None, set())
         }
