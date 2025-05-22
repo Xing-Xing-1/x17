@@ -189,19 +189,21 @@ class Datestamp:
         self.time_zone_name = time_zone_name or DEFUALT_TIME_ZONE_NAME
         self.time_zone = pytz.timezone(self.time_zone_name)
         if all(v is None for v in [year, month, day]):
-            self.datetime = datetime.now(self.time_zone)
-        else:
-            self.datetime = datetime(
-                year=year,
-                month=month,
-                day=day,
-                hour=hour or 0,
-                minute=minute or 0,
-                second=second or 0,
-                microsecond=microsecond or 0,
-                tzinfo=self.time_zone,
+            self.datetime = self.time_zone.localize(
+                datetime.now()
             )
-
+        else:
+            self.datetime = self.time_zone.localize(
+                datetime(
+                    year=year,
+                    month=month,
+                    day=day,
+                    hour=hour or 0,
+                    minute=minute or 0,
+                    second=second or 0,
+                    microsecond=microsecond or 0,
+                )
+            )
         self.year = self.datetime.year
         self.month = self.datetime.month
         self.day = self.datetime.day
@@ -354,15 +356,15 @@ class Datestamp:
 
     def __bool__(self) -> bool:
         return any(getattr(self, key, 0) != 0 for key in self.attr)
+    
+    def to_timezone(self, target_zone: str) -> "Datestamp":
+        target = pytz.timezone(target_zone)
+        dt_converted = self.datetime.astimezone(target)
+        return Datestamp.from_datetime(dt_converted, time_zone_name=target_zone)
 
     # --- other methods ---
 
     def describe(self, as_text=False) -> str:
-        """
-        Describe the datestamp
-        :return: str: Description
-
-        """
         if not as_text:
             return self.dict
         else:

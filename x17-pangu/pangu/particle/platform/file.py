@@ -1,11 +1,17 @@
 from typing import Optional
+
 from pangu.particle.platform.path import Path
 
 
 class File:
-    def __init__(self, path: Path, content: Optional[str] = None):
+    def __init__(self, path: Path):
         self.path = path
-        self.content = content
+    
+    def __str__(self) -> str:
+        return str(self.path)
+        
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(path={self.path})"
 
     def read(self) -> str:
         raise NotImplementedError("read() must be implemented by subclass")
@@ -16,17 +22,4 @@ class File:
     def exists(self) -> bool:
         raise NotImplementedError("exists() must be implemented by subclass")
 
-    def to_dict(self) -> dict:
-        return {
-            "path": str(self.path),
-            "content": self.content,
-        }
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(path={self.path})"
-
-    def export(self) -> dict:
-        return {
-            "path": str(self.path),
-            "content": self.content,
-        }

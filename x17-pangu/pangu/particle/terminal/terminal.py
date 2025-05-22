@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import shutil
 import os
+import re
+import psutil
 import subprocess
 from typing import Any, Dict, Optional
 
@@ -11,10 +13,7 @@ from pangu.particle.duration import Duration
 from pangu.particle.platform import Platform
 
 class Terminal:
-    """
-    A cross-platform virtual Terminal.
-    """
-
+    
     def __init__(
         self,
         cwd: Optional[str] = None,
@@ -38,11 +37,24 @@ class Terminal:
     @property
     def is_linux(self) -> bool:
         return self.platform.is_linux
+    
+    @property
+    def dict(self) -> Dict[str, Any]:
+        return {
+            "cwd": self.cwd,
+            "env": self.env,
+            "encoding": self.encoding,
+            "platform": self.platform.name,
+            "history": self.history,
+        }
+
+    def record(self, cmd: Command, response: Response) -> None:
+        self.history.append({"command": cmd.dict, "response": response.dict})
 
     def run(
         self, 
         cmd: Command,
-        wait: Optional[Duration | int] = Duration(second=5),
+        wait: Optional[Duration | int] = None,
     ) -> Response:
         cmd.env = {
             **os.environ,
@@ -73,6 +85,7 @@ class Terminal:
     ) -> Response:
         """
         Synchronously run a command and capture its output.
+        
         """
         start = Datestamp.now()
         params = cmd.params.copy()
@@ -159,24 +172,78 @@ class Terminal:
                 pid=None,
                 process=None,
             )
-
-    def record(self, cmd: Command, response: Response) -> None:
-        self.history.append({
-            "command": cmd.dict,
-            "response": response.dict,
-        })
         
-    def exist(
-        self,
-        program: str = None,
-    ) -> bool:
-        if (program):
-            return Terminal.exist_from(program=program)
-
+        
+    # -- Check if program exists --
+        
     @staticmethod
-    def exist_from(
-        program: str = None,
-    ) -> bool:
+    def exist_from(program) -> bool:
         return shutil.which(program) is not None
         
+    def exist(self, program: str) -> bool:
+        return Terminal.exist_from(program=program)
+    
+    
+    # -- Get version from program -- 
+    
+    
+    @staticmethod
+    def get_version_from(program: str, option: str = "--version") -> str:
+        response = Terminal.run_from(
+            cmd=Command(cmd=f"{program} {option}", check=True, shell=True,)
+        )
+        if response.success:
+            match = re.search(r"\b\d+\.\d+(\.\d+)?\b", response.stdout)
+            version = match.group(0) if match else ""
+            return version
+        else:
+            return None
+        
+    def get_version(self, program: str, option: str = "--version") -> str:
+        return Terminal.get_version_from(program=program, option=option)
+
+    
+    # -- Process management --
+    
+    # @staticmethod
+    # def list_process_from(keyword: str = None) -> Optional[str]:
+    #     results = []
+    #     for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'username', 'cpu_percent', 'memory_percent']):
+        
+    #     response = Terminal.run_from(cmd=Command(cmd=cmd, shell=True))
+    #     if response.success and response.stdout.strip():
+    #         return response.stdout.strip()
+    #     return None
+    # # psutil
+    
+    # def list_processes_structured(self) -> List[Dict[str, Any]]:
+    #     results = []
+    #     for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'username', 'cpu_percent', 'memory_percent']):
+    #         try:
+    #             results.append(proc.info)
+    #         except (psutil.NoSuchProcess, psutil.AccessDenied):
+    #             continue
+    #     return results
+
+    # def find_process(self, keyword: str) -> bool:
+    #     for proc in psutil.process_iter(['cmdline']):
+    #         try:
+    #             cmd = " ".join(proc.info['cmdline'] or [])
+    #             if keyword in cmd:
+    #                 return True
+    #         except (psutil.NoSuchProcess, psutil.AccessDenied):
+    #             continue
+    #     return False
+
+    # def kill_process(self, keyword: str) -> List[int]:
+    #     killed = []
+    #     for proc in psutil.process_iter(['pid', 'cmdline']):
+    #         try:
+    #             cmd = " ".join(proc.info['cmdline'] or [])
+    #             if keyword in cmd:
+    #                 proc.kill()
+    #                 killed.append(proc.info['pid'])
+    #         except (psutil.NoSuchProcess, psutil.AccessDenied):
+    #             continue
+    #     return killed
     

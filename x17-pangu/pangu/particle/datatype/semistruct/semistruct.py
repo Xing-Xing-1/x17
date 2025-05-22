@@ -21,7 +21,7 @@ class Semistruct(dict):
         ]
     
     @property
-    def dict(self) -> dict[str, str]:
+    def dict(self) -> Dict[str, str]:
         return {key: getattr(self, key) for key in self.attr}
 
     def __repr__(self):

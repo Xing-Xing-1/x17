@@ -54,7 +54,6 @@ class Url:
             self.host = result.hostname or host
             self.port = result.port or port
             self.path = result.path or path
-            
             parsed_query = parse_qs(result.query or "")
             self.query = parsed_query.copy()
             if query:
@@ -134,6 +133,8 @@ class Url:
         )
         
     def join_querys(self, query: Dict[str, Any]) -> "Url":
+        if not query:
+            return self
         for key, value in query.items():
             self.join_query(key, value)
         return self

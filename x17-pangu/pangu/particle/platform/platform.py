@@ -26,9 +26,7 @@ class Platform:
         self.python_version = platform.python_version()
         self.hostname = socket.gethostname()
         self.env_vars=dict(os.environ)
-        self.is_docker = self.check_docker()
         self.plugins = kwargs.get("plugins", {})
-        
         for key, value in kwargs.items():
             if not hasattr(self, key):
                 setattr(self, key, value)
@@ -37,16 +35,8 @@ class Platform:
     def ip_address(self) -> str:
         try:
             return socket.gethostbyname(socket.gethostname())
-        except Exception:
+        except Exception as error:
             return "127.0.0.1"
-    
-    
-    def check_docker(self) -> bool:
-        try:
-            with open("/proc/1/cgroup", "rt") as f:
-                return "docker" in f.read() or "kubepods" in f.read()
-        except Exception:
-            return False
 
     @property
     def is_macos(self) -> bool:
@@ -60,6 +50,26 @@ class Platform:
     def is_windows(self) -> bool:
         return self.os == "windows"
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
     @property
-    def is_local(self) -> bool:
-        return not self.is_docker  # Cloud check could be added later
+    def dict(self) -> Dict[str, str]:
+        return {
+            "name": self.name,
+            "platform": self.platform,
+            "os": self.os,
+            "architecture": self.architecture,
+            "python_version": self.python_version,
+            "hostname": self.hostname,
+            "ip_address": self.ip_address,
+            "env_vars": self.env_vars,
+        }
+    
+    def __repr__(self) -> str:
+        attributes = []
+        for unit, value in self.dict.items():
+            if value:
+                attributes.append(f"{unit}={value}")
+        return f"{self.__class__.__name__}({', '.join(attributes)})"
+

@@ -23,18 +23,9 @@ def test_ip_address(platform):
     assert "." in ip or ip == "127.0.0.1"
 
 
-def test_check_docker(platform):
-    docker_flag = platform.check_docker()
-    assert isinstance(docker_flag, bool)
-
-
 def test_is_macos_linux_windows_exclusive(platform):
     flags = [platform.is_macos, platform.is_linux, platform.is_windows]
     assert sum(flags) == 1  # Only one should be True
-
-
-def test_is_local_inverses_docker(platform):
-    assert platform.is_local == (not platform.is_docker)
 
 
 def test_custom_kwargs():

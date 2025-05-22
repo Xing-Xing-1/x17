@@ -27,21 +27,26 @@ class Response:
 
     def __init__(
         self,
-        status: int = 0,
+        status: Optional[int] = None,
         headers: dict = {},
         body: bytes = b"",
         url: str = "",
         error: str = "",
     ):
-        self.status = status
+        self.status = status or 0
         self.headers = headers
         self.body = body
         self.url = Url(url) if not isinstance(url, Url) else url
         self.error = error
 
     @property
+    def code(self) -> Optional[int]:
+        return self.status
+
+    @property
     def attr(self) -> List[str]:
         return [
+            "code",
             "status",
             "headers",
             "body",
@@ -52,6 +57,7 @@ class Response:
     @property
     def dict(self) -> Dict[str, Any]:
         return {
+            "code": self.code,
             "status": self.status,
             "headers": self.headers,
             "body": self.body,

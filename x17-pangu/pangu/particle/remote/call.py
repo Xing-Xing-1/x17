@@ -12,6 +12,7 @@ from pangu.particle.datestamp.datestamp import Datestamp
 
 
 class Call:
+    
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Call":
         return cls(
@@ -22,7 +23,7 @@ class Call:
             body=data.get("body", None),
             timeout=data.get("timeout", 10),
             retry=data.get("retry", 1),
-            interval=data.get("interval", Duration(second=1))
+            interval=data.get("interval", None),
         )
 
     @classmethod
@@ -38,17 +39,15 @@ class Call:
         body: Optional[Union[str, bytes, dict]] = None,
         timeout: int = 10,
         retry: int = 1,
-        interval: Duration = Duration(second=1),
+        interval: Duration = None,
     ):
         self.method = method.upper()
         self.url = Url(url=url) if isinstance(url, str) else url
         self.query = query or {}
         self.url = self.url.join_querys(self.query)
-
         self.headers = headers or {}
         self.headers.setdefault("Accept", "*/*")
         self.headers.setdefault("User-Agent", "Call/1.0")
-
         self.body = body
         self.timeout = timeout
         self.retry = retry
@@ -134,13 +133,14 @@ class Call:
                     url=self.url,
                     error=error,
                     retry=index + 1,
-                    interval=self.interval.second,
+                    interval=self.interval,
                 )
             )
 
             if 200 <= status < 300 or index >= self.retry - 1:
                 break
-            self.interval.wait()
+               
+            self.wait()
 
         return Response(
             status=status,
@@ -149,3 +149,11 @@ class Call:
             url=self.url,
             error=error,
         )
+        
+    def wait(self) -> None:
+        if self.interval:
+            if isinstance(self.interval, (int, float)):
+                time.sleep(self.interval)
+            elif isinstance(self.interval, Duration):
+                self.interval.wait()
+    

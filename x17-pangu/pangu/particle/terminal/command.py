@@ -40,7 +40,7 @@ class Command:
         timeout: Optional[Duration] = None,
         encoding: str = "utf-8",
         text: Optional[bool] = True,
-        output: Optional[str] = True,
+        output: Optional[bool] = True,
         sync: Optional[bool] = True,
     ) -> None:
         self.cmd = cmd if isinstance(cmd, str) else " ".join(cmd)
@@ -107,6 +107,21 @@ class Command:
             if value != 0:
                 attributes.append(f"{unit}={value}")
         return f"{self.__class__.__name__}({', '.join(attributes)})"
+    
+    @property
+    def dict(self) -> Dict[str, Any]:
+        return {
+            "cmd": self.cmd,
+            "cwd": self.cwd,
+            "env": self.env,
+            "shell": self.shell,
+            "check": self.check,
+            "timeout": self.timeout.dict if self.timeout else None,
+            "encoding": self.encoding,
+            "text": self.text,
+            "output": self.output,
+            "sync": self.sync,
+        }
     
     def add_option(self, option: str, value: Optional[str] = None) -> None:
         if value is not None:
