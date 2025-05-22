@@ -1,13 +1,11 @@
 import queue
 import threading
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
+from pangu.particle.log.log_core import LogCore
 from pangu.particle.log.log_event import LogEvent
 from pangu.particle.log.log_stream import LogStream
-from pangu.particle.log.log_core import LogCore
-
 from pangu.particle.text.id import Id
-from pangu.particle.datestamp import Datestamp
 
 
 class LogGroup:
@@ -15,14 +13,13 @@ class LogGroup:
         self,
         name: Optional[str] = "",
         core: Optional[LogCore] = None,
-        sync_mode: Optional[bool] = False,
-        **kwargs: Any,
+        sync: Optional[bool] = False,
     ):
         self.id = Id.uuid(8)
         self.base_name = name
         self.name = name or f"{self.__class__.__name__}:{self.id}"
         self.core = core
-        self.sync_mode = sync_mode
+        self.sync = sync
         if self.core:
             self.core.register_group(self)
         self.streams: Dict[str, List[LogEvent]] = {}
@@ -34,9 +31,8 @@ class LogGroup:
     @property
     def attr(self) -> list[str]:
         return [
-            "id",
-            "name",
-            "core",
+            key for key in self.__dict__.keys() 
+            if not key.startswith("_") and isinstance(self.__dict__[key], str)
         ]
 
     @property
@@ -51,7 +47,7 @@ class LogGroup:
         return f"{self.__class__.__name__}({', '.join(attr_parts)})"
 
     def __str__(self):
-        return self.__repr__()
+        return self.name
 
     def register_stream(self, stream: LogStream):
         stream.group = self
@@ -59,11 +55,11 @@ class LogGroup:
         return stream
 
     def receive(
-        self, 
-        stream_name: str, 
+        self,
+        stream_name: str,
         event: LogEvent,
     ):
-        if self.sync_mode:
+        if self.sync:
             with self._lock:
                 self.streams.setdefault(stream_name, []).append(event)
             if self.core:

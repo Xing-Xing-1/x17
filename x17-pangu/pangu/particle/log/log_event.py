@@ -1,13 +1,15 @@
 from __future__ import annotations
-from typing import Optional, List, Dict, Any
+
+from typing import Any, Dict, List, Optional
 
 from pangu.particle.datestamp import Datestamp
 from pangu.particle.text.id import Id
 
 
 class LogEvent:
+    
     def from_dict(
-        self, 
+        self,
         data: Dict[str, Any],
     ) -> LogEvent:
         return LogEvent(
@@ -21,7 +23,7 @@ class LogEvent:
         message: str,
         name: Optional[str] = "",
         level: str = "INFO",
-        datestamp: Optional[str] = None,
+        datestamp: Optional[Datestamp] = None,
         context: Optional[str] = None,
         code: Optional[int] = None,
         tags: Optional[List[Dict[str, str]]] = None,
@@ -32,7 +34,13 @@ class LogEvent:
         self.id = Id.uuid(5)
         self.base_name = name
         self.name = f"{name}:{self.id}" or f"{self.__class__.__name__}:{self.id}"
-        self.datestamp = datestamp or Datestamp.now().datestamp_str
+        if isinstance(datestamp, Datestamp):
+            self.datestamp = datestamp.datestamp_str
+            self.time_zone_name = datestamp.time_zone_name
+        else:
+            self.datestamp = Datestamp.now().datestamp_str
+            self.time_zone_name = Datestamp.now().time_zone_name
+            
         self.level = level.upper()
         self.message = message
         self.context = context
@@ -43,27 +51,26 @@ class LogEvent:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def __repr__(self):
-        attr_parts = []
-        for key in self.attr:
-            value = getattr(self, key, None)
-            if value:
-                attr_parts.append(f"{key}={repr(value)}")
-        return f"{self.__class__.__name__}({', '.join(attr_parts)})"
-
-    def __str__(self):
-        return self.__repr__()
-
     @property
-    def attr(self) -> List[str]:
+    def attr(self) -> list[str]:
         return [
-            key for key in self.__dict__.keys()
+            key for key in self.__dict__.keys() 
             if not key.startswith("_")
         ]
 
     @property
-    def dict(self) -> Dict[str, Any]:
+    def dict(self) -> dict[str, str]:
         return {key: getattr(self, key) for key in self.attr}
+    
+    def __repr__(self):
+        attr_parts = []
+        for key in self.attr:
+            value = getattr(self, key, None)
+            attr_parts.append(f"{key}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attr_parts)})"
 
+    def __str__(self):
+        return self.name
+    
     def export(self) -> Dict[str, str]:
         return self.dict

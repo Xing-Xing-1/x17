@@ -1,10 +1,10 @@
 import queue
 import threading
-from typing import Dict, List, Optional, Any
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from pangu.particle.text.id import Id
 from pangu.particle.log.log_event import LogEvent
+from pangu.particle.text.id import Id
+
 if TYPE_CHECKING:
     from pangu.particle.log.log_group import LogGroup
 
@@ -22,6 +22,27 @@ class LogCore:
         self._lock = threading.Lock()
         self._thread = threading.Thread(target=self._consume, daemon=True)
         self._thread.start()
+
+    @property
+    def attr(self) -> list[str]:
+        return [
+            key for key in self.__dict__.keys() 
+            if not key.startswith("_") and isinstance(self.__dict__[key], str)
+        ]
+
+    @property
+    def dict(self) -> dict[str, str]:
+        return {key: getattr(self, key) for key in self.attr}
+
+    def __repr__(self):
+        attr_parts = []
+        for key in self.attr:
+            value = getattr(self, key, None)
+            attr_parts.append(f"{key}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attr_parts)})"
+
+    def __str__(self):
+        return self.name
 
     def register_group(self, group: "LogGroup") -> str:
         with self._lock:
