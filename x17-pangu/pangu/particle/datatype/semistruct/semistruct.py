@@ -3,25 +3,40 @@ from typing import Any, Dict, Optional
 import warnings
 
 
-class SemiStruct(dict):
-    """
-    A structured dictionary-like container that restricts native dict operations
-    and encourages use of controlled methods like `.get()`, `.put()`, and `.merge()`.
+class Semistruct(dict):
     
-    """
     def __init__(
         self, 
         data: Optional[Dict[str, Any]] = None,
-        name: Optional[str] = None,
+        name: Optional[str] = "",
     ):
         super().__init__(data or {})
-        
-        self.initialized = True
         self.name = name
         
+    @property
+    def attr(self) -> list[str]:
+        return [
+            key for key in self.__dict__.keys() 
+            if not key.startswith("_") and isinstance(self.__dict__[key], str)
+        ]
+    
+    @property
+    def dict(self) -> dict[str, str]:
+        return {key: getattr(self, key) for key in self.attr}
+
+    def __repr__(self):
+        attr_parts = []
+        for key in self.attr:
+            value = getattr(self, key, None)
+            attr_parts.append(f"{key}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attr_parts)})"
+    
+    def __str__(self):
+        return self.name 
     
     def put(self, key: str, value: Any) -> None:
-        self[key] = value
+        super().__setitem__(key, value)
+        return self
         
     def get(self, key: str, default: Optional[Any] = None) -> Any:
         return super().get(key, default)
@@ -45,28 +60,16 @@ class SemiStruct(dict):
         warnings.warn(message, category=category, stacklevel=stacklevel)
 
     def __getitem__(self, key):
-        self.warn(
-            f"[SemiStruct] Direct access `obj[{key!r}]` is disabled. Use `.get({key!r})` instead. This access will be ignored.",
-        )
-        pass
+        self.warn(f"direct access obj[{key!r}] is disabled. Use .get({key!r})",)
 
     def __setitem__(self, key, value):
-        self.warn(
-            f"[SemiStruct] Direct assignment `obj[{key!r}] = {value!r}` is disabled. Use `.put({key!r}, {value!r})` instead.",
-        )
-        pass
+        self.warn(f"direct assignment obj[{key!r}] = {value!r} is disabled. Use .put({key!r}, {value!r}).")
 
     def update(self, *args, **kwargs):
-        self.warn(
-            "[SemiStruct] `update()` is disabled. Use `.merge()` instead.",
-        )
-        pass
+        self.warn("update() is disabled. Use .merge().")
 
     def pop(self, *args, **kwargs):
-        self.warn(
-            "[SemiStruct] `pop()` is disabled. Use `.remove()` instead.",
-        )
-        pass
+        self.warn("pop() is disabled. Use .remove().")
 
     
     
