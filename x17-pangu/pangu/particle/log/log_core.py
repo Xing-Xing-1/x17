@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import queue
 import threading
 from typing import TYPE_CHECKING, Any, Dict, List, Optional

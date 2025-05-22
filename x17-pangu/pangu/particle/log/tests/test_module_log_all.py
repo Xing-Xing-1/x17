@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import time
 from pangu.particle.log.log_core import LogCore
 from pangu.particle.log.log_group import LogGroup

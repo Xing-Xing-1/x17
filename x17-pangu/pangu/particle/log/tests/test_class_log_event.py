@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import pytest
 from pangu.particle.log.log_event import LogEvent
 from pangu.particle.datestamp import Datestamp
