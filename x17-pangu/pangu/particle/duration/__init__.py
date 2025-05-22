@@ -1,3 +1,5 @@
 from .duration import Duration
 
-__all__ = ["Duration"]
+__all__ = [
+    "Duration",
+]

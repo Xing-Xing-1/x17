@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import time
 from datetime import timedelta
 from typing import Dict, Literal, Optional, Union
-import time
 
 from dateutil.relativedelta import relativedelta
 
@@ -21,34 +21,10 @@ class Duration:
 
     @classmethod
     def set_precise(cls) -> None:
-        """
-        设置 Duration 为精确模式
-        考虑到闰年和月份的天数差异，精确模式下的时间单位表如下：
-        - year: 365.25 days
-        - month: 30.4375 days
-
-        :return: None
-
-        """
         cls.TIME_UNIT_TABLE = PRECISE_TIME_UNIT_TABLE
 
     @classmethod
     def from_dict(cls, dictionary: Dict[str, int]) -> "Duration":
-        """
-        从字典创建 Duration 实例。
-        :param dictionary: 包含时间单位的字典
-            - year: int
-            - month: int
-            - week: int
-            - day: int
-            - hour: int
-            - minute: int
-            - second: int
-            - millisecond: int
-            - microsecond: int
-        :return: Duration 实例
-
-        """
         return cls(**{key: dictionary.get(key, 0) for key in cls.TIME_UNITS})
 
     @classmethod
@@ -57,15 +33,6 @@ class Duration:
         td: timedelta,
         normalise: bool = True,
     ) -> "Duration":
-        """
-        从 datetime.timedelta 创建 Duration 实例.
-        注意: timedelta 不包含 year 或 month 信息.
-        :param td: datetime.timedelta 对象
-        :param normalise: 是否归一化
-
-        :return: Duration 实例
-
-        """
         if not isinstance(td, timedelta):
             raise TypeError("Expected a datetime.timedelta object")
         return cls(
@@ -81,15 +48,6 @@ class Duration:
         rd: relativedelta,
         normalise: bool = True,
     ) -> "Duration":
-        """
-        从 dateutil.relativedelta 创建 Duration 实例.
-        注意: relativedelta 不包含 week 信息.
-        :param rd: dateutil.relativedelta 对象
-        :param normalise: 是否归一化
-
-        :return: Duration 实例
-
-        """
         if not isinstance(rd, relativedelta):
             raise TypeError("Expected a dateutil.relativedelta object")
         return cls(
@@ -118,14 +76,6 @@ class Duration:
         normalize: bool = True,
         normalize_mode: Literal["calendar", "strict", "flat"] = "calendar",
     ) -> None:
-        """
-        初始化 Duration 对象，支持指定单位的数值或具体的时间参数。
-        :param value: 数值
-
-        :attr base: 对象的总秒数
-
-        """
-        # Precise duration params
         self.year = year
         self.month = month
         self.week = week
@@ -137,7 +87,6 @@ class Duration:
         self.microsecond = microsecond
         self.nanosecond = nanosecond
 
-        # Base attributes
         self.normalize = normalize
         self.normalize_mode = normalize_mode
         if self.normalize:
@@ -161,23 +110,16 @@ class Duration:
     @property
     def dict(self) -> Dict[str, int]:
         return {
-            unit: getattr(self, unit) for unit in self.TIME_UNITS if hasattr(self, unit)
+            unit: getattr(self, unit) 
+            for unit in self.TIME_UNITS 
+            if hasattr(self, unit)
         }
 
     @property
     def base(self) -> Union[int, float]:
-        """
-        作为基础单位（秒）的属性
-        :return: Duration 对象的总秒数
-        """
         return self.get_base()
 
     def get_base(self) -> Union[int, float]:
-        """
-        返回所有单位转换为基础单位（秒）的总和。
-        :return: Duration 对象的总秒数
-
-        """
         return sum(
             getattr(self, unit) * factor
             for unit, factor in self.TIME_UNIT_TABLE.items()
@@ -286,28 +228,33 @@ class Duration:
     def __mul__(self, factor: Union[int, float]) -> "Duration":
         if not isinstance(factor, (int, float)):
             return NotImplemented
-        scaled = {unit: getattr(self, unit, 0) * factor for unit in self.TIME_UNITS}
+        scaled = {
+            unit: getattr(self, unit, 0) * factor 
+            for unit in self.TIME_UNITS
+        }
         return Duration(**{k: int(v) for k, v in scaled.items()})
 
     def __truediv__(self, divisor: Union[int, float]) -> "Duration":
         if not isinstance(divisor, (int, float)) or divisor == 0:
             raise ValueError("Divisor must be a non-zero int or float")
-        scaled = {unit: getattr(self, unit, 0) / divisor for unit in self.TIME_UNITS}
+        scaled = {
+            unit: getattr(self, unit, 0) / divisor 
+            for unit in self.TIME_UNITS
+        }
         return Duration(**{k: int(v) for k, v in scaled.items()})
 
     def __hash__(self) -> int:
-        return hash(tuple(getattr(self, unit, 0) for unit in self.TIME_UNITS))
+        return hash(
+            tuple(
+                getattr(self, unit, 0) 
+                for unit in self.TIME_UNITS
+            )
+        )
 
     def __bool__(self) -> bool:
         return self.get_base() != 0
 
     def describe(self, as_text=False) -> str:
-        """
-        返回 Duration 对象的描述（人类可读）
-        例如: "1 year, 2 months, 3 days"
-
-        :return: 描述字符串
-        """
         if not as_text:
             return self.dict
         else:
@@ -320,20 +267,6 @@ class Duration:
             return ", ".join(description) if description else "0 second"
 
     def set(self, **kwargs) -> None:
-        """
-        设置 Duration 对象的属性
-        :param kwargs: 属性字典
-            - year: int
-            - month: int
-            - week: int
-            - day: int
-            - hour: int
-            - minute: int
-            - second: int
-            - millisecond: int
-            - microsecond: int
-
-        """
         for key, value in kwargs.items():
             if key in self.TIME_UNITS and isinstance(value, (int, float)):
                 setattr(self, key, value)
@@ -344,9 +277,6 @@ class Duration:
         return {key: value for key, value in self.dict.items()}
 
     def wait(self) -> None:
-        """
-        等待指定的时间段
-        :return: None
-
-        """
-        time.sleep(self.get_base())
+        time.sleep(
+            self.get_base(),
+        )
