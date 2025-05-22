@@ -8,7 +8,6 @@ import pytz
 from pangu.particle.constant.timezone import (
     DEFUALT_TIME_ZONE,
     DEFUALT_TIME_ZONE_NAME,
-    TIMEZONE_TABLE,
 )
 from pangu.particle.duration.duration import Duration
 
@@ -38,15 +37,6 @@ class Datestamp:
         date_time_format: str = None,
         time_zone_name: str = None,
     ) -> None:
-        """
-        Set class variables
-        :param date_format (str): Date format
-        :param time_format (str): Time format
-        :param date_time_format (str): Datetime format
-        :param time_zone_name (pytz.timezone): Timezone
-        :return: None
-
-        """
         if date_format:
             cls.DATE_FORMAT = date_format
         if time_format:
@@ -84,11 +74,6 @@ class Datestamp:
         cls,
         time_zone_name: str = None,
     ) -> "Datestamp":
-        """
-        Get current datestamp
-        returns: Datestamp: Current date and time
-
-        """
         dt = datetime.now(
             pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME),
         )
@@ -109,11 +94,6 @@ class Datestamp:
         dt: datetime,
         time_zone_name: str = None,
     ) -> "Datestamp":
-        """
-        Create datestamp object from datetime
-        returns: datestamp object
-
-        """
         return cls(
             year=dt.year,
             month=dt.month,
@@ -131,11 +111,6 @@ class Datestamp:
         timestamp: float,
         time_zone_name: str = None,
     ) -> "Datestamp":
-        """
-        Create Datestamp from timestamp
-        returns: Datestamp: Datestamp object
-
-        """
         tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         dt = datetime.fromtimestamp(timestamp, tz)
         return cls(
@@ -156,12 +131,6 @@ class Datestamp:
         date_time_format=None,
         time_zone_name: str = None,
     ) -> "Datestamp":
-        """
-        Create Datestamp from string
-        returns: Datestamp: Datestamp object
-
-        """
-        tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         dt_format = date_time_format or cls.DATE_TIME_FORMAT
         dt = datetime.strptime(
             string,
@@ -179,11 +148,11 @@ class Datestamp:
         )
 
     @classmethod
-    def from_iso(cls, string: str, time_zone_name: str = None) -> "Datestamp":
-        """
-        Create Datestamp from ISO 8601 format string.
-        Example: "2025-04-26T11:00:00"
-        """
+    def from_iso(
+        cls, 
+        string: str, 
+        time_zone_name: str = None,
+    ) -> "Datestamp":
         return cls.from_string(
             string=string,
             date_time_format="%Y-%m-%dT%H:%M:%S",
@@ -193,22 +162,17 @@ class Datestamp:
     @classmethod
     def from_dict(
         cls,
-        dictionary: Dict[str, Union[int, str]],
+        data: Dict[str, Union[int, str]],
     ) -> "Datestamp":
-        """
-        Create Datestamp from dictionary
-        returns: Datestamp: Datestamp object
-
-        """
         return cls(
-            year=dictionary.get("year"),
-            month=dictionary.get("month"),
-            day=dictionary.get("day"),
-            hour=dictionary.get("hour"),
-            minute=dictionary.get("minute"),
-            second=dictionary.get("second"),
-            microsecond=dictionary.get("microsecond"),
-            time_zone_name=dictionary.get("time_zone_name") or cls.TIME_ZONE_NAME,
+            year=data.get("year"),
+            month=data.get("month"),
+            day=data.get("day"),
+            hour=data.get("hour"),
+            minute=data.get("minute"),
+            second=data.get("second"),
+            microsecond=data.get("microsecond"),
+            time_zone_name=data.get("time_zone_name") or cls.TIME_ZONE_NAME,
         )
 
     def __init__(
@@ -222,26 +186,8 @@ class Datestamp:
         microsecond: Optional[int] = 0,
         time_zone_name: Optional[str] = None,
     ):
-        """
-        Initialize Datestamp with date and time components.
-        Args:
-            year (int): Year
-            month (int): Month
-            day (int): Day
-            hour (int): Hour
-            minute (int): Minute
-            second (int): Second
-            microsecond (int): Microsecond
-            tzinfo (pytz.timezone): Timezone info
-
-        """
-        if year is None or month is None or day is None:
-            raise ValueError("year, month, and day must be provided")
-
         self.time_zone_name = time_zone_name or DEFUALT_TIME_ZONE_NAME
         self.time_zone = pytz.timezone(self.time_zone_name)
-
-        # --- Step 3: Default to now() if everything is None ---
         if all(v is None for v in [year, month, day]):
             self.datetime = datetime.now(self.time_zone)
         else:
@@ -315,33 +261,18 @@ class Datestamp:
     # --- get and set methods ---
 
     def get_datetime(self) -> datetime:
-        """
-        Get datetime object
-        returns: datetime: Datetime object
-
-        """
         return self.datetime
 
     def get_timestamp(self) -> float:
-        """
-        Get timestamp
-        returns: float: Timestamp
-
-        """
         return self.datetime.timestamp()
 
     def set(self, **kwargs) -> None:
-        """
-        Set attributes
-        :param kwargs: Attributes to set
-        :return: None
-
-        """
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
             else:
                 raise AttributeError(f"{key} is not a valid attribute")
+        
         self.datetime = datetime(
             year=self.year,
             month=self.month,
@@ -444,11 +375,7 @@ class Datestamp:
             return ", ".join(description) if description else "0 second"
 
     def export(self) -> Dict[str, Union[int, float]]:
-        """
-        Export datestamp object as a dictionary
-        
-        """
         return {
-            "datestamp": self.datestamp_str,
-            "timezone": self.time_zone_name,
+            key: getattr(self, key, 0)
+            for key in self.attr
         }

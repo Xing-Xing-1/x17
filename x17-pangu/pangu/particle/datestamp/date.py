@@ -1,5 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from typing import Dict, Literal, Optional, Union
+from typing import Dict, Optional, Union
 import pytz
 
 from pangu.particle.datestamp.datestamp import Datestamp
@@ -8,21 +10,22 @@ from pangu.particle.duration.duration import Duration
 
 
 class Date(Datestamp):
-    """
-    A subclass of Datestamp that only represents a date (year, month, day).
-    Time attributes are disabled, and adding/subtracting durations returns Date.
-
-    """
-
+    
     @classmethod
-    def today(cls, time_zone_name=None) -> "Date":
+    def today(
+        cls, 
+        time_zone_name: Optional[str] = None,
+    ) -> "Date":
         tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         now = datetime.now(tz)
         return cls(now.year, now.month, now.day, time_zone_name)
 
     @classmethod
     def from_string(
-        cls, string: str, date_format: str = None, time_zone_name: str = None
+        cls, 
+        string: str,
+        date_format: Optional[str] = None,
+        time_zone_name: Optional[str] = None,
     ) -> "Date":
         tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         fmt = date_format or cls.DATE_FORMAT
@@ -30,7 +33,11 @@ class Date(Datestamp):
         return cls(dt.year, dt.month, dt.day, time_zone_name)
 
     @classmethod
-    def from_timestamp(cls, timestamp: float, time_zone_name: str = None) -> "Date":
+    def from_timestamp(
+        cls, 
+        timestamp: float,
+        time_zone_name: Optional[str] = None,
+    ) -> "Date":
         tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         dt = datetime.fromtimestamp(timestamp, tz)
         return cls(dt.year, dt.month, dt.day, time_zone_name)
@@ -109,9 +116,7 @@ class Date(Datestamp):
         )
 
     def export(self) -> Dict[str, Union[int, float]]:
-        """
-        Export datestamp object as a dictionary
-        :return: dict: Dictionary representation of the datestamp
-
-        """
-        return {key: getattr(self, key, 0) for key in self.attr}
+        return {
+            key: getattr(self, key, 0) 
+            for key in self.attr
+        }

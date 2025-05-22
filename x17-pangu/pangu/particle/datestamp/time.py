@@ -7,34 +7,66 @@ from pangu.particle.duration.duration import Duration
 
 
 class Time(Datestamp):
-    """
-    A subclass of Datestamp that only represents a time (hour, minute, second).
-    Date attributes are disabled, and adding/subtracting durations returns Time.
-
-    """
-
+    
     @classmethod
-    def now(cls, time_zone_name=None) -> "Time":
+    def now(
+        cls,
+        time_zone_name=None,
+    ) -> "Time":
         tz = pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         now = datetime.now(tz)
-        return cls(now.hour, now.minute, now.second, now.microsecond, time_zone_name)
+        return cls(
+            now.hour,
+            now.minute,
+            now.second,
+            now.microsecond,
+            time_zone_name,
+        )
 
     @classmethod
     def from_string(
-        cls, string: str, time_format: str = None, time_zone_name: str = None
+        cls,
+        string: str,
+        time_format: str = None,
+        time_zone_name: str = None,
     ) -> "Time":
-        print("Using time_format:", time_format or cls.TIME_FORMAT)
-        t = datetime.strptime(string, time_format or cls.TIME_FORMAT)
-        return cls(t.hour, t.minute, t.second, t.microsecond, time_zone_name)
+        t = datetime.strptime(
+            string,
+            time_format or cls.TIME_FORMAT,
+        )
+        return cls(
+            t.hour,
+            t.minute,
+            t.second,
+            t.microsecond,
+            time_zone_name,
+        )
 
     @classmethod
-    def from_timestamp(cls, timestamp: float, time_zone_name: str = None) -> "Time":
+    def from_timestamp(
+        cls,
+        timestamp: float,
+        time_zone_name: str = None,
+    ) -> "Time":
         dt = datetime.fromtimestamp(
             timestamp, pytz.timezone(time_zone_name or cls.TIME_ZONE_NAME)
         )
-        return cls(dt.hour, dt.minute, dt.second, dt.microsecond, time_zone_name)
+        return cls(
+            dt.hour,
+            dt.minute,
+            dt.second,
+            dt.microsecond,
+            time_zone_name,
+        )
 
-    def __init__(self, hour=0, minute=0, second=0, microsecond=0, time_zone_name=None):
+    def __init__(
+        self,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+        time_zone_name=None,
+    ):
         now = Datestamp.now(time_zone_name)
         super().__init__(
             now.year,
@@ -98,7 +130,11 @@ class Time(Datestamp):
         return [item for item in base if item not in {"year", "month", "day"}]
 
     def to_datestamp(
-        self, year=None, month=None, day=None, time_zone_name=None
+        self,
+        year=None,
+        month=None,
+        day=None,
+        time_zone_name=None,
     ) -> Datestamp:
         return Datestamp(
             year=year or self.year,
@@ -112,9 +148,4 @@ class Time(Datestamp):
         )
 
     def export(self) -> Dict[str, Union[int, float]]:
-        """
-        Export datestamp object as a dictionary
-        :return: dict: Dictionary representation of the datestamp
-
-        """
         return {key: getattr(self, key, 0) for key in self.attr}
