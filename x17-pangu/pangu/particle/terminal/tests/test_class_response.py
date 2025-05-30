@@ -1,7 +1,8 @@
 import pytest
-from pangu.particle.terminal.response import Response
 from pangu.particle.datestamp import Datestamp
 from pangu.particle.duration import Duration
+from pangu.particle.terminal.response import Response
+
 
 class MockCompletedProcess:
     def __init__(self, returncode=0, stdout="", stderr="", args=None):
@@ -10,10 +11,11 @@ class MockCompletedProcess:
         self.stderr = stderr
         self.args = args or []
 
+
 def test_response_init_and_properties():
     started = Datestamp.now()
     ended = Datestamp.now()
-    
+
     res = Response(
         code=0,
         stdout="Hello World",
@@ -42,6 +44,7 @@ def test_response_init_and_properties():
     assert res.failed is False
     assert res.timeout is False
 
+
 def test_response_from_dict():
     data = {
         "code": 0,
@@ -64,16 +67,16 @@ def test_response_from_dict():
     assert res.captured is True
     assert res.signal is None
 
+
 def test_response_from_object():
     mock = MockCompletedProcess(
-        returncode=1,
-        stdout="output",
-        stderr="error",
-        args=["ls", "-la"]
+        returncode=1, stdout="output", stderr="error", args=["ls", "-la"]
     )
     started = Datestamp.now()
     ended = Datestamp.now()
-    res = Response.from_object(mock, started=started, ended=ended, cwd="/home", env={"A": "B"})
+    res = Response.from_object(
+        mock, started=started, ended=ended, cwd="/home", env={"A": "B"}
+    )
     assert res.code == 1
     assert res.stdout == "output"
     assert res.stderr == "error"
@@ -82,6 +85,7 @@ def test_response_from_object():
     assert res.env == {"A": "B"}
     assert res.success is False
     assert res.failed is True
+
 
 def test_response_str_repr():
     started = Datestamp.now()
@@ -100,6 +104,7 @@ def test_response_str_repr():
     assert "stderr=" in repr(res)  # stderr is empty
     assert "started=" in repr(res)
     assert "ended=" in repr(res)
+
 
 def test_response_dict_and_export():
     started = Datestamp.now()

@@ -6,21 +6,15 @@ import fnmatch
 import re
 
 class Text(str):
-    """
-    A subclass of Python's built-in str, enriched with utility methods
-    such as digest generation, wildcard matching, and export support.
-    
-    """
 
     def __new__(cls, content: str = ""):
         return super(Text, cls).__new__(cls, content)
 
     def __init__(self, content: str = ""):
-        # no need to set self.content explicitly; str content is the instance itself
+        # no need to set self.content explicitly; 
+        # str content is the instance itself
         pass
 
-    # --- Lazy Properties ---
-    
     @property
     def dict(self) -> Dict[str, str]:
         if not str(self):
@@ -130,32 +124,22 @@ class Text(str):
     # --- Methods ---
 
     def as_digest(self, algorithm: str = "sha256") -> "Text":
-        """
-        Hashes the content using the specified algorithm.
-        Available algorithms defined in HASH_ALGORITHMS.
-        
-        """
         hash_function = HASH_ALGORITHMS[algorithm]
         hash_function.update(self.encode())
         return Text(hash_function.hexdigest())
 
-    def wildcard_match(self, pattern: str) -> bool:
+    def wildcard_match(
+        self, 
+        pattern: str,
+    ) -> bool:
         return fnmatch.fnmatch(str(self), pattern)
 
     def to_snake(self) -> "Text":
-        """
-        Converts the string to snake_case.
-        
-        """
         s = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', str(self))
         s = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s)
         return Text(s.lower())
 
     def to_camel(self) -> "Text":
-        """
-        Converts the string to camelCase.
-        
-        """
         parts = str(self).split('_')
         return Text(parts[0] + ''.join(word.capitalize() for word in parts[1:]))
 
@@ -164,3 +148,4 @@ class Text(str):
             key: value for key, value in self.dict.items()
             if value not in (None, set())
         }
+        

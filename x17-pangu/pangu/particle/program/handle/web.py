@@ -4,6 +4,7 @@ from pangu.particle.remote.call import Call
 from pangu.particle.remote.url import Url
 from pangu.particle.remote.response import Response
 
+
 class WebHandle:
     def __init__(
         self,
@@ -24,11 +25,20 @@ class WebHandle:
             path=path,
             query=query,
             user=user,
-            password=password
+            password=password,
         )
-    
-    def is_available(self) -> bool:
-        call = Call(method="GET", url=self.url, timeout=1)
+
+    def is_available(
+        self,
+        retry: int = 3,
+        timeout: int = 3,
+    ) -> bool:
+        call = Call(
+            method="GET",
+            url=self.url,
+            retry=retry,
+            timeout=timeout,
+        )
         resp = call.send()
         return resp.success
 
@@ -41,29 +51,43 @@ class WebHandle:
     @property
     def dict(self) -> Dict[str, Any]:
         return self.url.dict
-    
+
     def get(
         self,
         path: str = "",
         query: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
+        retry: int = 3,
         timeout: int = 3,
     ) -> Response:
         url = self.url.join_path(path).join_querys(query)
-        call = Call(method="GET", url=url, headers=headers, timeout=timeout)
+        call = Call(
+            method="GET",
+            url=url,
+            headers=headers,
+            retry=retry,
+            timeout=timeout,
+        )
         response = call.send()
         return response
-    
+
     def post(
         self,
         path: str = "",
         query: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
         body: Optional[Union[str, bytes, Dict]] = None,
+        retry: int = 3,
         timeout: int = 3,
     ) -> Response:
         url = self.url.join_path(path).join_querys(query)
-        call = Call(method="POST", url=url, headers=headers, body=body, timeout=timeout)
+        call = Call(
+            method="POST",
+            url=url,
+            headers=headers,
+            body=body,
+            retry=retry,
+            timeout=timeout,
+        )
         response = call.send()
         return response
-    

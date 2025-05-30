@@ -139,7 +139,7 @@ class Call:
 
             if 200 <= status < 300 or index >= self.retry - 1:
                 break
-               
+            
             self.wait()
 
         return Response(

@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
-import shutil
 import os
 import re
-import psutil
+import shutil
 import subprocess
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Union, Literal
 
-from pangu.particle.terminal.command import Command
-from pangu.particle.terminal.response import Response
+import psutil
 from pangu.particle.datestamp import Datestamp
 from pangu.particle.duration import Duration
 from pangu.particle.platform import Platform
+from pangu.particle.terminal.command import Command
+from pangu.particle.terminal.process import Process
+from pangu.particle.terminal.processset import ProcessSet
+from pangu.particle.terminal.response import Response
+from pangu.particle.text import Text
+
 
 class Terminal:
-    
+
     def __init__(
         self,
         cwd: Optional[str] = None,
@@ -21,7 +25,7 @@ class Terminal:
         encoding: str = "utf-8",
     ):
         self.cwd = cwd
-        self.env = env 
+        self.env = env
         self.encoding = encoding
         self.platform = Platform()
         self.history = []
@@ -33,11 +37,11 @@ class Terminal:
     @property
     def is_macos(self) -> bool:
         return self.platform.is_macos
-    
+
     @property
     def is_linux(self) -> bool:
         return self.platform.is_linux
-    
+
     @property
     def dict(self) -> Dict[str, Any]:
         return {
@@ -52,7 +56,7 @@ class Terminal:
         self.history.append({"command": cmd.dict, "response": response.dict})
 
     def run(
-        self, 
+        self,
         cmd: Command,
         wait: Optional[Duration | int] = None,
     ) -> Response:
@@ -70,9 +74,9 @@ class Terminal:
 
     @staticmethod
     def run_from(
-        cmd: Command, 
+        cmd: Command,
         wait: Optional[Duration | int] = None,
-    ) -> Response:            
+    ) -> Response:
         if cmd.sync:
             return Terminal.run_from_sync(cmd=cmd, wait=wait)
         else:
@@ -85,14 +89,14 @@ class Terminal:
     ) -> Response:
         """
         Synchronously run a command and capture its output.
-        
+
         """
         start = Datestamp.now()
         params = cmd.params.copy()
-        
+
         try:
             result = subprocess.run(**params)
-            if wait and wait.base > 0: 
+            if wait and wait.base > 0:
                 wait.wait()
             end = Datestamp.now()
             return Response(
@@ -125,21 +129,22 @@ class Terminal:
                 pid=None,
                 process=None,
             )
-        
+
     @staticmethod
     def run_from_async(
-        cmd: Command, 
+        cmd: Command,
         wait: Optional[Duration | int] = None,
     ) -> Response:
         """
         Asynchronously launch a command (non-blocking).
         """
-        if isinstance(wait, int): wait = Duration(second=wait)
+        if isinstance(wait, int):
+            wait = Duration(second=wait)
         start = Datestamp.now()
         params = cmd.params.copy()
         try:
             process = subprocess.Popen(**params)
-            if wait and wait.base > 0: 
+            if wait and wait.base > 0:
                 wait.wait()
             end = Datestamp.now()
             return Response(
@@ -172,25 +177,26 @@ class Terminal:
                 pid=None,
                 process=None,
             )
-        
-        
+
     # -- Check if program exists --
-        
+
     @staticmethod
     def exist_from(program) -> bool:
         return shutil.which(program) is not None
-        
+
     def exist(self, program: str) -> bool:
         return Terminal.exist_from(program=program)
-    
-    
-    # -- Get version from program -- 
-    
-    
+
+    # -- Get version from program --
+
     @staticmethod
     def get_version_from(program: str, option: str = "--version") -> str:
         response = Terminal.run_from(
-            cmd=Command(cmd=f"{program} {option}", check=True, shell=True,)
+            cmd=Command(
+                cmd=f"{program} {option}",
+                check=True,
+                shell=True,
+            )
         )
         if response.success:
             match = re.search(r"\b\d+\.\d+(\.\d+)?\b", response.stdout)
@@ -198,52 +204,100 @@ class Terminal:
             return version
         else:
             return None
-        
+
     def get_version(self, program: str, option: str = "--version") -> str:
         return Terminal.get_version_from(program=program, option=option)
 
-    
     # -- Process management --
+
+    @staticmethod
+    def list_process_from() -> Optional[ProcessSet]:
+        pool = ProcessSet()
+        for proc in psutil.process_iter(ProcessSet.ALLOWED_OPTIONS):
+            try:
+                if proc.info.get("pid") is None:
+                    continue
+                process = Process.from_pid(proc.info.get("pid"))
+                pool.add(process)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        return pool
+
+    def list_process() -> Optional[ProcessSet]:
+        return Terminal.list_process_from()
     
-    # @staticmethod
-    # def list_process_from(keyword: str = None) -> Optional[str]:
-    #     results = []
-    #     for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'username', 'cpu_percent', 'memory_percent']):
+    @staticmethod
+    def find_process_from(
+        keyword: str,
+        attributes: Optional[List[str]] = None,
+        ignore_case: bool = True,
+        method: Literal["exact", "regex", "wildcard"] = None,
+    ) -> Optional[ProcessSet]:
+        if attributes is None:
+            attributes = ProcessSet.ALLOWED_ATTRS
         
-    #     response = Terminal.run_from(cmd=Command(cmd=cmd, shell=True))
-    #     if response.success and response.stdout.strip():
-    #         return response.stdout.strip()
-    #     return None
-    # # psutil
-    
-    # def list_processes_structured(self) -> List[Dict[str, Any]]:
-    #     results = []
-    #     for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'username', 'cpu_percent', 'memory_percent']):
-    #         try:
-    #             results.append(proc.info)
-    #         except (psutil.NoSuchProcess, psutil.AccessDenied):
-    #             continue
-    #     return results
+        pool = Terminal.list_process()
+        if method == "regex":
+            return pool.match_regex(
+                keyword=keyword, 
+                attributes=attributes, 
+                ignore_case=ignore_case,
+            )
+        elif method == "wildcard":
+            return pool.match_wildcard(
+                keyword=keyword, 
+                attributes=attributes, 
+                ignore_case=ignore_case,
+            )
+        else:
+            return pool.match(
+                keyword=keyword, 
+                attributes=attributes, 
+                ignore_case=ignore_case,
+            )
+            
+    def find_process(
+        self,
+        keyword: str,
+        attributes: Optional[List[str]] = None,
+        ignore_case: bool = True,
+        method: Literal["", "regex", "wildcard"] = "",
+    ) -> Optional[ProcessSet]:
+        return Terminal.find_process_from(
+            keyword=keyword,
+            attributes=attributes,
+            ignore_case=ignore_case,
+            method=method,
+        )
 
-    # def find_process(self, keyword: str) -> bool:
-    #     for proc in psutil.process_iter(['cmdline']):
-    #         try:
-    #             cmd = " ".join(proc.info['cmdline'] or [])
-    #             if keyword in cmd:
-    #                 return True
-    #         except (psutil.NoSuchProcess, psutil.AccessDenied):
-    #             continue
-    #     return False
-
-    # def kill_process(self, keyword: str) -> List[int]:
-    #     killed = []
-    #     for proc in psutil.process_iter(['pid', 'cmdline']):
-    #         try:
-    #             cmd = " ".join(proc.info['cmdline'] or [])
-    #             if keyword in cmd:
-    #                 proc.kill()
-    #                 killed.append(proc.info['pid'])
-    #         except (psutil.NoSuchProcess, psutil.AccessDenied):
-    #             continue
-    #     return killed
-    
+    @staticmethod
+    def kill_process_from(
+        keyword: str,
+        attributes: Optional[List[str]] = None,
+        ignore_case: bool = True,
+        method: Literal["", "regex", "wildcard"] = "",
+    ) -> Response:
+        processes = Terminal.find_process_from(
+            keyword=keyword,
+            attributes=attributes,
+            ignore_case=ignore_case,
+            method=method,
+        )
+        for process in processes:
+            process.kill()
+        return [p.pid for p in processes]
+        
+        
+    def kill_process(
+        self,
+        keyword: str,
+        attributes: Optional[List[str]] = None,
+        ignore_case: bool = True,
+        method: Literal["", "regex", "wildcard"] = "",
+    ) -> Response:
+        return Terminal.kill_process_from(
+            keyword=keyword,
+            attributes=attributes,
+            ignore_case=ignore_case,
+            method=method,
+        )
