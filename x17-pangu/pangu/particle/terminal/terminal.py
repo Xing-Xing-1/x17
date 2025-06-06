@@ -181,11 +181,26 @@ class Terminal:
     # -- Check if program exists --
 
     @staticmethod
-    def exist_from(program) -> bool:
-        return shutil.which(program) is not None
+    def exist_from(
+        program: Optional[str] = None,
+        path: Optional[str] = None,
+    ) -> bool:
+        if program:
+            return shutil.which(program) is not None
+        elif path:
+            return os.path.exists(path)
 
-    def exist(self, program: str) -> bool:
-        return Terminal.exist_from(program=program)
+    def exist(
+        self, 
+        program: Optional[str] = None,
+        path: Optional[str] = None,
+    ) -> bool:
+        if program:
+            return Terminal.exist_from(program=program)
+        elif path:
+            return Terminal.exist_from(path=path)
+        else:
+            return False
 
     # -- Get version from program --
 

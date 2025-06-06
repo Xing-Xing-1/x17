@@ -1,12 +1,12 @@
 import time
 import pytest
-from pangu.particle.program.handle.daemon import DaemonHandle
+from pangu.particle.programhandle.daemon import DaemonHandle
 from pangu.particle.terminal.command import Command
 
 @pytest.fixture
 def http_server_daemon():
-    daemon = DaemonHandle.from_keyword(
-        keyword="http.server",
+    daemon = DaemonHandle.from_name(
+        name="http.server",
         start_command="python3 -m http.server 8000",
         stop_command="pkill -f 'python3 -m http.server 8000'"
     )
@@ -76,14 +76,14 @@ def test_dict(http_server_daemon):
     time.sleep(0.5)
     d = http_server_daemon.dict
     assert isinstance(d, dict)
-    assert "keyword" in d
+    assert "name" in d
     assert "pids" in d
 
 
 def test_repr(http_server_daemon):
     r = repr(http_server_daemon)
     assert "DaemonHandle" in r
-    assert http_server_daemon.keyword in r
+    assert http_server_daemon.name in r
 
 
 def test_get_version(http_server_daemon):
@@ -124,6 +124,6 @@ def test_repr(http_server_daemon):
     assert "http.server" in output
 
 def test_version_fetch():
-    handle = DaemonHandle.from_keyword("python3", None, None)
+    handle = DaemonHandle.from_name("python3", None, None)
     version = handle.get_version()
     assert version is None or isinstance(version, str)

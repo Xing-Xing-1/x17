@@ -5,3 +5,4 @@ holidays
 boto3
 moto[boto3]
 jmespath
+psutil

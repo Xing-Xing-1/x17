@@ -13,10 +13,12 @@ class Response:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Response":
         return cls(
+            code=data.get("code", None),
             status=data.get("status", 0),
             headers=data.get("headers", {}),
             body=data.get("body", b""),
             url=data.get("url", ""),
+            stdout=data.get("stdout", ""),
             error=data.get("error", ""),
         )
 
@@ -27,21 +29,21 @@ class Response:
 
     def __init__(
         self,
+        code: Optional[int] = None,
         status: Optional[int] = None,
         headers: dict = {},
         body: bytes = b"",
         url: str = "",
+        stdout: str = "",
         error: str = "",
     ):
-        self.status = status or 0
+        self.code = code or status or 0
+        self.status = code or status or 0
         self.headers = headers
         self.body = body
         self.url = Url(url) if not isinstance(url, Url) else url
+        self.stdout = stdout
         self.error = error
-
-    @property
-    def code(self) -> Optional[int]:
-        return self.status
 
     @property
     def attr(self) -> List[str]:
@@ -51,6 +53,7 @@ class Response:
             "headers",
             "body",
             "url",
+            "stdout",
             "error",
         ]
 
@@ -62,6 +65,7 @@ class Response:
             "headers": self.headers,
             "body": self.body,
             "url": self.url,
+            "stdout": self.stdout,
             "error": self.error,
         }
 
