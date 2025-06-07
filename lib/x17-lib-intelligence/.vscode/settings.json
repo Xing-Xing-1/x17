@@ -1,9 +1,9 @@
 {
-  "python.defaultInterpreterPath": "/Users/xingxing/miniforge3/envs/proj-pangu-env/bin/python",
+  "python.defaultInterpreterPath": "/Users/xingxing/miniforge3/envs/x17-lib-intelligence/bin/python",
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestArgs": [
-    "pangu"
+    "."
   ],
   "python.formatting.provider": "black",
   "editor.formatOnSave": true,

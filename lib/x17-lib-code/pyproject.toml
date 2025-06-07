@@ -9,6 +9,7 @@ authors = [
   { name = "Xing Xing", email = "x.xing.work@gmail.com" }
 ]
 dependencies = [
+  "build",
   "x17-lib-base"
 ]
 
@@ -18,3 +19,4 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["x17_code"]
+include-package-data = true

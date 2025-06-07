@@ -1,0 +1,25 @@
+[project]
+name = "x17-lib-intelligence"
+version = "0.1.0"
+description = "x17-lib-intelligence: Deployable LLM interface with modular interface, model, and handler architecture."
+authors = [
+    { name = "Xing Xing", email = "x.xing.work@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "pytest",
+    "x17-lib-base",
+    "build"
+]
+
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["x17_intelligence"]
+include-package-data = true

@@ -4,6 +4,9 @@
 
 ---
 
+## Inspiration
+> 万八千岁，开天辟地，阳清为天，阴浊为地，盘古在其中，一日九变
+
 ## Features
 
 - **Date & Time Toolkit**  
