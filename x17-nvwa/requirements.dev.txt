@@ -1,7 +1,0 @@
--e file:///Users/xingxing/Desktop/my-project/x17/x17-pangu
-isort
-black
-pytest
-pytest-cov
-pytest-asyncio
-tree
