@@ -1,0 +1,23 @@
+[project]
+name = "x17-lib-database"
+version = "0.1.0"
+description = "Taiyi is the unified database access interface of the x17 system, abstracting CRUD and orchestration for MongoDB, Redshift, SQLite, and beyond."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  { name = "Xing Xing", email = "x.xing.work@gmail.com" }
+]
+dependencies = [
+  "pytest",
+  "pymongo",
+  "x17-lib-base"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["x17_database"]
+include-package-data = true

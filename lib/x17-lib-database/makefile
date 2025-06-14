@@ -1,6 +1,6 @@
 # PyPI package name (from pyproject.toml)
 PACKAGE_NAME := $(shell grep '^name' pyproject.toml | head -1 | cut -d '"' -f2)
-PACKAGE_ALIAS := 女娲
+PACKAGE_ALIAS := 太乙
 
 
 .PHONY: build clean upload version check all
