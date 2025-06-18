@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 from docker.models.containers import Container as DockerContainer
 from docker.client import DockerClient
-from x17_container.dock.container.container import Container
+from x17_container.dockers.container.container import Container
 
 
 # ---------- Fixtures ----------

@@ -7,6 +7,8 @@ import threading
 from x17_base.particle.log.log_stream import LogStream
 from x17_base.particle.log.log_group import LogGroup
 
+from x17_container.dockers.image.image import Image
+
 
 class Container:
 
@@ -31,22 +33,27 @@ class Container:
     def from_dict(
         cls,
         data: Dict[str, Any],
+        docker_client: Optional[DockerClient] = None,  # Docker client instance
     ) -> "Container":
         args = {
+            "docker_client": docker_client or docker.from_env(),
             "image": data.get("image"),
+            "image_obj": data.get("image_obj"),  # Optional Image object as dict
             "name": data.get("name"),
             "ports": data.get("ports"),
             "volumes": data.get("volumes"),
             "environment": data.get("environment"),
             "command": data.get("command"),
             "network": data.get("network"),
+            "auto_remove": data.get("auto_remove", False),
+            "detach": data.get("detach", True),
         }
         extra = {k: v for k, v in data.items() if k not in args}
         return cls(**args, **extra)
 
     def __init__(
         self,
-        image: str = None,
+        image: Optional[str | Image] = None,
         docker_client: Optional[DockerClient] = None,
         docker_container: Optional[DockerContainer] = None,
         name: Optional[str] = None,
@@ -81,12 +88,28 @@ class Container:
         
         # Initialize Docker client and container
         self.docker_client = docker_client or docker.from_env()
+        
+        # prepare image 
+        if isinstance(image, Image):
+            self.image = image
+            self.image.__setattr__("docker_client", self.docker_client)
+            self.image.__setattr__("log_stream", self.log_stream)
+            self.image.__setattr__("log_group", self.log_group)
+        elif isinstance(image, str):
+            self.image = Image(
+                docker_client = docker_client,
+                name=image,
+                log_stream=self.log_stream,
+                log_encoding=self.log_encoding,
+                log_errors=self.log_errors,
+            )
+        else:
+            raise TypeError("Image must be a string or an instance of Image class.")
+
         if docker_container:
             self.docker_container = docker_container
         else:
-            self.pull(image=image)
             self.build(
-                image=image,
                 name=name,
                 ports=ports,
                 volumes=volumes,
@@ -146,30 +169,8 @@ class Container:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, image={self.image}, name={self.name}, status={self.status})"
 
-    def pull(self, image: str = None):
-        try:
-            self.docker_client.images.pull(image)
-            self.log_stream.log(f"Image '{image}' pulled successfully.")
-        except docker.errors.ImageNotFound:
-            msg = f"Failed to pull image '{image}': Image not found in registry. Please check the image name."
-            self.log_stream.log(msg, level="ERROR")
-            raise RuntimeError(msg)
-        except docker.errors.APIError as e:
-            msg = f"Failed to pull image '{image}': Docker API error - {e.explanation or str(e)}"
-            self.log_stream.log(msg, level="ERROR")
-            raise RuntimeError(msg)
-        except docker.errors.DockerException as e:
-            msg = f"Failed to pull image '{image}': Docker service might not be running. {str(e)}"
-            self.log_stream.log(msg, level="ERROR")
-            raise RuntimeError(msg)
-        except Exception as e:
-            msg = f"Unknown error when pulling image '{image}': {str(e)}"
-            self.log_stream.log(msg, level="ERROR")
-            raise RuntimeError(msg)
-
     def build(
         self,
-        image: str = None,
         name: Optional[str] = None,
         ports: Optional[Dict[str, Any]] = None,
         volumes: Optional[List[Dict[str, Any]]] = None,
@@ -181,7 +182,7 @@ class Container:
         **kwargs: Any,
     ) -> "Container":
         self.docker_container = self.docker_client.containers.create(
-            image=image,
+            image=self.image.name,
             name=name,
             ports=ports,
             volumes=volumes,
@@ -192,15 +193,10 @@ class Container:
             auto_remove=auto_remove,
         )
         self.refresh()
-        self.log_stream.log(f"Container created with image {image}.")
+        self.log_stream.log(f"Container created with image {self.image.name}.")
 
     def load_attrs(self):
         self.id = self.docker_container.id
-        self.image = (
-            self.docker_container.image.tags[0]
-            if self.docker_container.image.tags
-            else "unknown"
-        )
         self.name = self.docker_container.name
         self.volumes = self.docker_container.attrs.get("Mounts", {})
         self.environment = self.docker_container.attrs.get("Config", {}).get("Env", [])

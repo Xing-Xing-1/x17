@@ -1,7 +1,7 @@
 import pytest
 import docker
 import time
-from x17_container.dock.container.container import Container
+from x17_container.dockers.container.container import Container
 
 #@pytest.mark.integration
 def test_container_lifecycle_integration():

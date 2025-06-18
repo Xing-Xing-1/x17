@@ -6,7 +6,7 @@ import docker
 
 
 if TYPE_CHECKING:
-    from x17_container.dock.container.container import Container
+    from x17_container.dockers.container.container import Container
 
 
 class Client:
