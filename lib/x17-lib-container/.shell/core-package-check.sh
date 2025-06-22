@@ -1,1 +1,0 @@
-twine check dist/*

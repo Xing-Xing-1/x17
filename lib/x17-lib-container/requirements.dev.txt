@@ -1,6 +1,0 @@
--e ../x17-lib-base
-isort
-black
-pytest
-packaging
-tree
