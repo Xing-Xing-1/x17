@@ -1,100 +1,111 @@
 import pytest
-
+from unittest.mock import MagicMock
+from x17_container.dockers.base.configuration import Configuration
+from x17_container.dockers.base.attributes import Attributes
 from x17_container.dockers.base.resource import Resource
 
+@pytest.fixture
+def config_dict():
+    return {"name": "test-resource", "driver": "bridge"}
 
 @pytest.fixture
-def resource():
-    """Fixture to create a Resource instance."""
-    return Resource(name="test_resource", verbose=True)
+def attr_dict():
+    return {"id": "abc123", "status": "running"}
 
+@pytest.fixture
+def config_obj():
+    return Configuration(name="obj-resource", driver="host")
 
-def test_resource_initialization(resource):
-    """Test the initialization of the Resource class."""
-    assert resource.name == "test_resource"
-    assert resource.verbose is True
-    assert resource.type == "Resource"
-    assert str(resource) == "test_resource"
-    assert repr(resource) == "Resource(name=test_resource)"
+@pytest.fixture
+def attr_obj():
+    return Attributes(id="def456", status="exited")
 
+def test_init_with_dicts(config_dict, attr_dict):
+    resource = Resource(configuration=config_dict, attributes=attr_dict, verbose=True)
+    assert resource.configuration.name == "test-resource"
+    assert resource.configuration.driver == "bridge"
+    assert resource.attributes.id == "abc123"
+    assert resource.attributes.status == "running"
+    assert "test-resource" in str(resource)
+    assert "Resource(name=test-resource" in repr(resource)
 
-def test_resource_default_initialization():
-    """Test the default initialization of the Resource class."""
+def test_init_with_objects(config_obj, attr_obj):
+    resource = Resource(configuration=config_obj, attributes=attr_obj)
+    assert resource.name == "obj-resource"
+    assert resource.configuration.driver == "host"
+    assert resource.attributes.status == "exited"
+
+def test_fallback_name():
     resource = Resource()
-    assert resource.name is None
-    assert resource.verbose is False
-    assert resource.type == "Resource"
-    assert str(resource) == ""
-    assert repr(resource) == "Resource(name=None)"
+    assert resource.name.startswith("Resource-")
+
+def test_describe_output(config_dict, attr_dict):
+    resource = Resource(configuration=config_dict, attributes=attr_dict)
+    desc = resource.describe()
+    assert desc["name"] == "test-resource"
+    assert desc["type"] == "Resource"
+    assert desc["configuration"]["driver"] == "bridge"
+    assert desc["attributes"]["status"] == "running"
+
+def test_interface_methods_exist():
+    resource = Resource()
+    assert hasattr(resource, "create") and callable(resource.create)
+    assert hasattr(resource, "remove") and callable(resource.remove)
+    assert hasattr(resource, "load") and callable(resource.load)
+    assert hasattr(resource, "exists") and callable(resource.exists)
+    
+def test_name_from_configuration():
+    conf = Configuration(name="net-conf")
+    attr = Attributes(name="net-attr")
+    res = Resource(configuration=conf, attributes=attr)
+    assert res.name == "net-conf"
 
 
-def test_resource_with_docker_client():
-    """Test the Resource class with a Docker client."""
-    from docker import from_env
-
-    docker_client = from_env()
-    resource = Resource(docker_client=docker_client, name="docker_resource")
-
-    assert resource.docker_client is docker_client
-    assert resource.name == "docker_resource"
-    assert resource.type == "Resource"
-    assert str(resource) == "docker_resource"
-    assert repr(resource) == "Resource(name=docker_resource)"
+def test_name_from_attributes_if_no_configuration_name():
+    conf = Configuration()
+    attr = Attributes(name="net-attr")
+    res = Resource(configuration=conf, attributes=attr)
+    assert res.name == "net-attr"
 
 
-def test_resource_logging():
-    """Test the logging functionality of the Resource class."""
-    resource = Resource(name="log_resource", verbose=True)
-    assert resource.log_stream is not None
-    assert resource.log_stream.name == "log_resource"
-    assert resource.log_stream.verbose is True
+def test_name_generated_if_none_provided():
+    res = Resource(configuration={}, attributes={})
+    assert res.name.startswith("Resource-")
+    assert len(res.name) > len("Resource-")
 
 
-def test_resource_repr():
-    """Test the __repr__ method of the Resource class."""
-    resource = Resource(name="repr_resource")
-    assert repr(resource) == "Resource(name=repr_resource)"
-
-    # Test with default name
-    resource_default = Resource()
-    assert repr(resource_default) == "Resource(name=None)"
+def test_str_and_repr_are_correct():
+    conf = Configuration(name="hello-net")
+    res = Resource(configuration=conf)
+    assert str(res) == "hello-net"
+    assert repr(res) == "Resource(name=hello-net)"
 
 
-def test_resource_str():
-    """Test the __str__ method of the Resource class."""
-    resource = Resource(name="str_resource")
-    assert str(resource) == "str_resource"
+def test_describe_output_structure():
+    conf = Configuration(name="net1", driver="bridge")
+    attr = Attributes(id="abc123", driver="bridge")
+    res = Resource(configuration=conf, attributes=attr)
+    desc = res.describe()
 
-    # Test with default name
-    resource_default = Resource()
-    assert str(resource_default) == ""
-
-
-def test_resource_type():
-    """Test the type property of the Resource class."""
-    resource = Resource(name="type_resource")
-    assert resource.type == "Resource"
-
-    # Test with default initialization
-    resource_default = Resource()
-    assert resource_default.type == "Resource"
+    assert desc["name"] == "net1"
+    assert desc["type"] == "Resource"
+    assert desc["configuration"]["driver"] == "bridge"
+    assert desc["attributes"]["id"] == "abc123"
 
 
-def test_resource_name():
-    """Test the name property of the Resource class."""
-    resource = Resource(name="name_resource")
-    assert resource.name == "name_resource"
-
-    # Test with default initialization
-    resource_default = Resource()
-    assert resource_default.name is None
+def test_each_resource_gets_unique_physical_id():
+    r1 = Resource(configuration={})
+    r2 = Resource(configuration={})
+    assert r1.physical_id != r2.physical_id
 
 
-def test_resource_verbose():
-    """Test the verbose property of the Resource class."""
-    resource = Resource(name="verbose_resource", verbose=True)
-    assert resource.verbose is True
+def test_log_stream_name_matches_resource_name():
+    res = Resource(configuration={"name": "streamy"})
+    assert res.log_stream.name == "streamy"
 
-    # Test with default initialization
-    resource_default = Resource()
-    assert resource_default.verbose is False
+
+def test_can_inject_custom_docker_client():
+    fake_client = MagicMock()
+    res = Resource(configuration={}, docker_client=fake_client)
+    assert res.docker_client is fake_client
+    
