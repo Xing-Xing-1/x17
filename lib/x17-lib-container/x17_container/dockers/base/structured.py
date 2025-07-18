@@ -13,10 +13,40 @@ class Structured:
     ) -> "Structured":
         return cls(**(data or {}))
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, validate_fields: bool = True, **kwargs: Any):
         for key, value in kwargs.items():
+            if validate_fields:
+                self.validate_field(self, key, value)
             setattr(self, key, value)
 
+    def validate_field(
+        self, 
+        key: str, 
+        value: Any, 
+        path: str = "",
+    ) -> None:
+        from x17_container.dockers.base.configuration import Configuration
+        from x17_container.dockers.base.attributes import Attributes
+
+        full_path = f"{path}.{key}" if path else key
+        primitive_types = (int, float, str, bool, type(None), datetime)
+        
+        if isinstance(value, primitive_types):
+            return
+        elif isinstance(value, list):
+            for idx, item in enumerate(value):
+                self.validate_field(f"[{idx}]", item, path=full_path)
+        elif isinstance(value, dict):
+            for k, v in value.items():
+                self.validate_field(k, v, path=full_path)
+        elif isinstance(value, Structured):
+            if not isinstance(value, (Configuration, Attributes)):
+                raise TypeError(f"Disallowed Structured subclass at '{full_path}': {type(value).__name__}")
+            for k, v in value.__dict__.items():
+                self.validate_field(k, v, path=full_path)
+        else:
+            raise TypeError(f"Illegal type at '{full_path}': {type(value).__name__}")
+    
     @property
     def type(self) -> str:
         return self.__class__.__name__

@@ -163,3 +163,72 @@ def test_deserialization_with_datetime():
 
     assert isinstance(obj.time, str)
     assert obj.time == now.isoformat()
+
+
+# mock Configuration / Attributes 类
+from x17_container.dockers.base.configuration import Configuration
+from x17_container.dockers.base.attributes import Attributes
+class InvalidStructured(Structured): pass
+
+@pytest.mark.parametrize(
+    "key, value",
+    [
+        ("a", 123),
+        ("b", 3.14),
+        ("c", "string"),
+        ("d", True),
+        ("e", None),
+        ("f", datetime(2025, 7, 18, 12, 0)),
+    ],
+)
+def test_validate_field_primitives(key, value):
+    obj = Structured(validate_fields=False)
+    obj.validate_field(key, value)
+
+
+def test_validate_field_list_and_dict():
+    data = {
+        "list": [1, "a", {"x": 42}],
+        "dict": {"k1": True, "k2": [None, 5.5]},
+    }
+    obj = Structured(validate_fields=False)
+    for k, v in data.items():
+        obj.validate_field(k, v)
+
+
+def test_validate_field_valid_structured_subclasses():
+    config = Configuration(x=1, y="ok")
+    attrs = Attributes(foo=[1, 2], bar={"a": True})
+    obj = Structured(validate_fields=False)
+    obj.validate_field("config", config)
+    obj.validate_field("attrs", attrs)
+
+
+def test_validate_field_invalid_structured_subclass():
+    invalid = InvalidStructured(name="bad")
+
+    obj = Structured(validate_fields=False)
+    with pytest.raises(TypeError) as e:
+        obj.validate_field("bad_struct", invalid)
+
+    assert "Disallowed Structured subclass" in str(e.value)
+    assert "bad_struct" in str(e.value)
+
+
+def test_validate_field_illegal_type_set():
+    obj = Structured(validate_fields=False)
+    with pytest.raises(TypeError) as e:
+        obj.validate_field("illegal_set", set([1, 2]))
+
+    assert "Illegal type" in str(e.value)
+    assert "illegal_set" in str(e.value)
+
+
+def test_validate_field_illegal_type_custom_object():
+    class Dummy: pass
+    obj = Structured(validate_fields=False)
+    with pytest.raises(TypeError) as e:
+        obj.validate_field("dummy", Dummy())
+
+    assert "Illegal type" in str(e.value)
+    assert "dummy" in str(e.value)
