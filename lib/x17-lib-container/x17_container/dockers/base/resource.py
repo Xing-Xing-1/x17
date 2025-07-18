@@ -1,13 +1,14 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 import docker
 from docker.client import DockerClient
-from x17_base.particle.text.id import Id
 from x17_base.particle.log.log_group import LogGroup
 from x17_base.particle.log.log_stream import LogStream
+from x17_base.particle.text.id import Id
 
-from x17_container.dockers.base.configuration import Configuration
 from x17_container.dockers.base.attributes import Attributes
+from x17_container.dockers.base.configuration import Configuration
+
 
 class Resource:
     """
@@ -35,6 +36,7 @@ class Resource:
     ):
         self.docker_client = docker_client or docker.from_env()
         self.physical_id = Id.uuid(length=4)
+
         if isinstance(configuration, Configuration):
             self.configuration = configuration
         else:
@@ -43,7 +45,8 @@ class Resource:
             self.attributes = attributes
         else:
             self.attributes = Attributes.from_dict(attributes or {})
-        
+
+        self.children: Dict[str, Resource] = {}
         self.log_stream = log_stream or LogStream(
             name=self.name,
             verbose=verbose,
@@ -53,13 +56,13 @@ class Resource:
     @property
     def type(self) -> str:
         return self.__class__.__name__
-    
+
     @property
     def name(self) -> str:
         return (
-            getattr(self.configuration, "name", None) or
-            getattr(self.attributes, "name", None) or
-            f"{self.__class__.__name__}-{self.physical_id}"
+            getattr(self.configuration, "name", None)
+            or getattr(self.attributes, "name", None)
+            or f"{self.__class__.__name__}-{self.physical_id}"
         )
 
     def __str__(self):
@@ -68,23 +71,50 @@ class Resource:
     def __repr__(self):
         return f"{self.type}(name={self.name})"
 
-    def describe(self) -> Dict[str, Any]:
-        return {
+    def describe(
+        self,
+        include_children: bool = False,
+    ) -> Dict[str, Any]:
+        result = {
             "name": self.name,
             "type": self.type,
-            "configuration": self.configuration.to_dict(),
-            "attributes": self.attributes.to_dict(),
+            "configuration": self.configuration.describe(),
+            "attributes": self.attributes.describe(),
         }
-        
+        if include_children:
+            result["children"] = {
+                name: child.describe(include_children=True)
+                for name, child in self.children.items()
+            }
+        return result
+
+    def add_child(
+        self,
+        resource: "Resource",
+    ) -> None:
+        self.children[resource.name] = resource
+
+    def remove_child(
+        self,
+        resource: "Resource",
+    ) -> None:
+        if resource.name in self.children:
+            del self.children[resource.name]
+
+    def get_child(
+        self,
+        name: str,
+    ) -> Optional["Resource"]:
+        return self.children.get(name, None)
+
     def create(self) -> "Resource":
         pass
-    
+
     def remove(self) -> None:
         pass
-    
+
     def load(self) -> "Resource":
         pass
-    
+
     def exists(self) -> bool:
         pass
-    

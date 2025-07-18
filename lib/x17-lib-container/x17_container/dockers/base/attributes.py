@@ -1,38 +1,21 @@
+from __future__ import annotations
+
 from typing import Any, Dict
 
-class Attributes:
+from x17_base.particle.text import Text
+
+from x17_container.dockers.base.structured import Structured
+
+
+class Attributes(Structured):
     """
-    Base class representing runtime attributes of Docker resources.
-    
+    Represents attributes that describe the real-time state of a Docker resource.
     """
-    
-    @classmethod
-    def from_dict(
-        cls, 
-        data: Dict[str, Any]
-    ) -> "Attributes":
-        return cls(**data)
-    
-    def __init__(
-        self, 
-        **kwargs: Any,
-    ):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
-    def to_dict(self) -> Dict[str, Any]:
-        return dict(self.__dict__)
-    
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, dict):
-            return self.to_dict() == other
-        if isinstance(other, Attributes):
-            return self.to_dict() == other.to_dict()
-        return False
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
 
-    def __ne__(self, other: Any) -> bool:
-        return not self.__eq__(other)
-    
-
-
-    
+    def describe(
+        self,
+    ) -> Dict[str, Any]:
+        return self.to_dict()

@@ -1,44 +1,24 @@
-from typing import Any, Dict
+from __future__ import annotations
 
-class Configuration:
+from typing import Any, Dict, Optional
+
+from x17_container.dockers.base.structured import Structured
+
+
+class Configuration(Structured):
     """
-    Base class represents a configuration to create Docker resources.
-    
+    Represents manual defined configuration to create Docker resources.
     """
-    
-    @classmethod
-    def from_dict(
-        cls, 
-        data: Dict[str, Any]
-    ) -> "Configuration":
-        return cls(**data)
-        
-    def __init__(
-        self, 
-        **kwargs: Any,
-    ):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
-    def to_dict(self) -> Dict[str, Any]:
-        return dict(self.__dict__)
-    
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, dict):
-            return self.to_dict() == other
-        if isinstance(other, Configuration):
-            return self.to_dict() == other.to_dict()
-        return False
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
 
-    def __ne__(self, other: Any) -> bool:
-        return not self.__eq__(other)
-    
-    def copy(
-        self, 
-        **overrides: Any,
-    ) -> "Configuration":
+    def describe(
+        self,
+        fields: Optional[list[str]] = None,
+    ) -> Dict[str, Any]:
         data = self.to_dict()
-        data.update(overrides)
-        return self.__class__(**data)
-    
-
+        if fields:
+            return {k: data[k] for k in fields if k in data}
+        else:
+            return data
