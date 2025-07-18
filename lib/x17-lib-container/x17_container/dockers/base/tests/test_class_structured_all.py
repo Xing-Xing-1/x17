@@ -1,9 +1,10 @@
 from datetime import datetime
 
 import pytest
-
 from x17_container.dockers.base.structured import Structured
-
+from x17_container.dockers.base.configuration import Configuration
+from x17_container.dockers.base.attributes import Attributes
+class InvalidStructured(Structured): pass
 
 class Example(Structured):
     def __init__(
@@ -164,11 +165,6 @@ def test_deserialization_with_datetime():
     assert isinstance(obj.time, str)
     assert obj.time == now.isoformat()
 
-
-# mock Configuration / Attributes 类
-from x17_container.dockers.base.configuration import Configuration
-from x17_container.dockers.base.attributes import Attributes
-class InvalidStructured(Structured): pass
 
 @pytest.mark.parametrize(
     "key, value",
